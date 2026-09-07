@@ -1,0 +1,89 @@
+:root {
+  --ink: #0c1014;
+  --paper: #ece8e1;
+  --accent: #2d7a72;
+  --stone: #9a948a;
+  --mass: 1.15rem;
+  --wide: 38rem;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: var(--mass);
+  line-height: 1.55;
+  color: var(--ink);
+  background: var(--paper);
+}
+
+header,
+main,
+footer {
+  width: min(100% - 2rem, var(--wide));
+  margin-inline: auto;
+}
+
+header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem 1.5rem;
+  padding-block: 1.5rem 2rem;
+}
+
+.mark {
+  margin: 0;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+nav {
+  display: flex;
+  gap: 1rem;
+}
+
+nav a[aria-current="page"] {
+  text-decoration-thickness: 2px;
+}
+
+main {
+  flex: 1;
+}
+
+h1 {
+  font-size: 1.65rem;
+  line-height: 1.25;
+  font-weight: 700;
+  margin: 0 0 1rem;
+}
+
+p {
+  margin: 0 0 1rem;
+}
+
+a {
+  color: var(--accent);
+}
+
+a:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+footer {
+  padding-block: 2.5rem 1.5rem;
+  color: var(--stone);
+  font-size: 0.95rem;
+}
