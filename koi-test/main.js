@@ -1,9 +1,14 @@
 import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js";
 
 const GX = 40, GY = 12;              // Grid-Aufloesung des prozeduralen Meshs
-const A_MAX = (14 * Math.PI) / 180;  // Laufwellen-Amplitude (Basiswert, skaliert mit uEnv)
+// Seitliche Auslenkung der SPINE SELBST, als Bruchteil der Koerperlaenge
+// (Rest-Einheit ~1 lokal). Ersetzt die fruehere winkelbasierte Drehung um
+// einen ortsfesten Ankerpunkt (Scherung statt echter Kruemmung, Befund
+// 14.09.). Per Auge kalibriert, aehnliche Groessenordnung wie die vorherige
+// Winkelamplitude (14deg/11deg) erzeugte -- nicht extern belegt.
+const WAVE_AMPL_FRAC = 0.05;
 const N_WAVES = 0.55;
-const BEND_MAX = (11 * Math.PI) / 180; // max. stationaere Zusatzkruemmung bei voller Drehrate
+const BEND_AMPL_FRAC = 0.03;         // max. stationaere Zusatzkruemmung bei voller Drehrate
 const OCC_MAX = 0.82;                // Deckel fuer Verdeckung -- nie 100% unsichtbar
 
 // ---------------------------------------------------------------------------
@@ -130,9 +135,24 @@ function buildGeometry(fish, spineMode) {
     lx = slx; ly = sly;
   }
 
+  // Tangente/Normale je Spine-Stuetzstelle (zentrale Differenz). Noetig,
+  // damit sich beim Verformen die Spine SELBST seitlich auslenkt und
+  // Querschnitte der neuen Tangente folgen -- statt nur lokal um einen
+  // ortsfesten Ankerpunkt zu drehen (das waere Scherung, siehe
+  // installFishShader).
+  const nS = lx.length;
+  const snx = new Float32Array(nS), sny = new Float32Array(nS);
+  for (let i = 0; i < nS; i++) {
+    const i0 = Math.max(0, i-1), i1 = Math.min(nS-1, i+1);
+    let tx = lx[i1]-lx[i0], ty = ly[i1]-ly[i0];
+    const tl = Math.hypot(tx,ty) || 1e-6;
+    tx /= tl; ty /= tl;
+    snx[i] = -ty; sny[i] = tx;   // 90 Grad gedreht, konsistente Haendigkeit
+  }
+
   const nV = GX * GY;
   const pos = new Float32Array(nV*3), uv = new Float32Array(nV*2);
-  const aU = new Float32Array(nV), aSpine = new Float32Array(nV*2);
+  const aU = new Float32Array(nV), aSpine = new Float32Array(nV*2), aNormal = new Float32Array(nV*2);
   let vi = 0;
   for (let j = 0; j < GY; j++) {
     for (let i = 0; i < GX; i++) {
@@ -143,6 +163,7 @@ function buildGeometry(fish, spineMode) {
       const ni = nearestSpine(px, py, lx, ly);
       aU[vi] = sU[ni];
       aSpine[vi*2] = lx[ni]; aSpine[vi*2+1] = ly[ni];
+      aNormal[vi*2] = snx[ni]; aNormal[vi*2+1] = sny[ni];
       vi++;
     }
   }
@@ -158,6 +179,7 @@ function buildGeometry(fish, spineMode) {
   g.setAttribute("uv", new THREE.BufferAttribute(uv, 2));
   g.setAttribute("aU", new THREE.BufferAttribute(aU, 1));
   g.setAttribute("aSpine", new THREE.BufferAttribute(aSpine, 2));
+  g.setAttribute("aNormal", new THREE.BufferAttribute(aNormal, 2));
   g.setIndex(idx);
   g.computeVertexNormals();
   return g;
@@ -178,17 +200,35 @@ function installFishShader(shader) {
     .replace("#include <common>", `#include <common>
 attribute float aU;
 attribute vec2 aSpine;
+attribute vec2 aNormal;
 uniform float uPhase;
 uniform float uEnv;
 uniform float uBend;
 varying vec2 vWorldXY;`)
     .replace("#include <begin_vertex>", `#include <begin_vertex>
 {
-  float amp = uEnv * ${A_MAX.toFixed(5)} * aU * aU;
-  float ang = amp * sin(uPhase - ${(2*Math.PI*N_WAVES).toFixed(5)} * aU) + uBend * ${BEND_MAX.toFixed(5)} * aU * aU;
+  // Laufende Koerperwelle als seitliche Auslenkung der SPINE SELBST entlang
+  // ihrer lokalen Normalen -- nicht als Drehung eines Vertex um einen
+  // ortsfesten Ankerpunkt (das war reine Scherung: ein Vertex genau auf der
+  // Spine bewegte sich dabei ueberhaupt nicht, egal wie gross der Winkel
+  // wurde -- Befund vom 14.09., pruefbar am vorherigen Diff).
+  // y(aU) ist die Auslenkung, dy/daU liefert analytisch die lokale
+  // Tangentensteigung, ang die daraus resultierende Querschnittsrotation --
+  // Querschnitte bleiben so an der tatsaechlich gebogenen Kontur
+  // ausgerichtet statt die Textur zu verzerren.
+  // WAVE_AMPL_FRAC/BEND_AMPL_FRAC sind angenaeherte Amplituden (Bruchteil
+  // der Koerperlaenge), per Auge kalibriert wie zuvor A_MAX/BEND_MAX, nicht
+  // aus einer externen biologischen Quelle belegt.
+  float th = uPhase - ${(2*Math.PI*N_WAVES).toFixed(5)} * aU;
+  float y = uEnv * ${WAVE_AMPL_FRAC.toFixed(5)} * aU*aU*sin(th)
+          + uBend * ${BEND_AMPL_FRAC.toFixed(5)} * aU*aU;
+  float dydu = uEnv * ${WAVE_AMPL_FRAC.toFixed(5)} * (2.0*aU*sin(th) - ${(2*Math.PI*N_WAVES).toFixed(5)}*aU*aU*cos(th))
+             + uBend * ${BEND_AMPL_FRAC.toFixed(5)} * 2.0*aU;
+  float ang = atan(dydu);
   float c = cos(ang), s = sin(ang);
+  vec2 newSpine = aSpine + aNormal * y;
   vec2 d = transformed.xy - aSpine;
-  transformed.xy = aSpine + vec2(c*d.x - s*d.y, s*d.x + c*d.y);
+  transformed.xy = newSpine + vec2(c*d.x - s*d.y, s*d.x + c*d.y);
   vWorldXY = (modelMatrix * vec4(transformed, 1.0)).xy;
 }`);
 
