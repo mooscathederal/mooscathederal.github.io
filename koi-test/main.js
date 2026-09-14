@@ -4,6 +4,7 @@ const GX = 40, GY = 12;              // Grid-Aufloesung des prozeduralen Meshs
 const A_MAX = (14 * Math.PI) / 180;  // Laufwellen-Amplitude (Basiswert, skaliert mit uEnv)
 const N_WAVES = 0.55;
 const BEND_MAX = (11 * Math.PI) / 180; // max. stationaere Zusatzkruemmung bei voller Drehrate
+const OCC_MAX = 0.82;                // Deckel fuer Verdeckung -- nie 100% unsichtbar
 
 // ---------------------------------------------------------------------------
 // Bewegungs-Zustandsmodell. Kein sin(t)/cos(t) der absoluten Zeit irgendwo in
@@ -201,14 +202,39 @@ varying vec2 vWorldXY;`)
 {
   vec2 puv = vec2(vWorldXY.x + 0.5, vWorldXY.y * uPondAspect + 0.5);
   float crown = texture2D(uCrownMap, clamp(puv, 0.0, 1.0)).r;
-  diffuseColor.a *= 1.0 - crown * uOcc;
+  // Obergrenze: ein Fisch darf nie VOELLIG verschwinden (crown*uOcc kann bei
+  // depth=1 unter dichter Krone gegen 1 gehen) -- das liest sich als Pop-
+  // Glitch, nicht als Tiefe. Gedeckelt bleibt er als Silhouette erkennbar.
+  diffuseColor.a *= 1.0 - crown * uOcc * ${OCC_MAX.toFixed(2)};
 }`);
+}
+
+// Kopfrichtung des Fischs im LOKALEN Mesh-Koordinatensystem (0 = zeigt nach
+// lokal +x). Die Rohbilder sind beliebig orientiert gemalt -- ohne diesen
+// Offset dreht main.js jeden Fisch nur um theta, in der stillschweigenden
+// Annahme "Kopf zeigt lokal nach rechts". Das stimmt fuer keinen der 31
+// Fische exakt (gemessen: -170deg bis +173deg ueber alle Typen verteilt),
+// dadurch schwimmen manche sichtbar rueckwaerts und der Wellenschlag laeuft
+// schraeg zur tatsaechlichen Bewegungsrichtung statt seitlich dazu.
+function computeHeadOffset(meta) {
+  const sx = meta.spineX, sy = meta.spineY;
+  const aspect = meta.h / meta.w;
+  const n = sx.length;
+  // Referenzpunkt ein Stueck hinter dem Kopf (nicht der Schwanz-Endpunkt),
+  // damit die Tangente bei stark gekruemmten Koerpern lokal am Kopf bleibt.
+  const refI = Math.max(1, Math.min(n - 1, Math.round(n * 0.2)));
+  // gleiche Y-Spiegelung wie in buildGeometry (sly = -(v-0.5)*aspect), damit
+  // der Winkel im selben Koordinatensystem wie a.theta liegt.
+  const hx = sx[0] - 0.5, hy = -(sy[0] - 0.5) * aspect;
+  const rx = sx[refI] - 0.5, ry = -(sy[refI] - 0.5) * aspect;
+  return Math.atan2(hy - ry, hx - rx);
 }
 
 async function loadFishType(fid, meta, tex) {
   const geomCurved = buildGeometry(meta, "curved");
   const geomStraight = buildGeometry(meta, "straight");
-  fishTypes[fid] = { geomCurved, geomStraight, tex, w: meta.w, h: meta.h };
+  const headOffset = computeHeadOffset(meta);
+  fishTypes[fid] = { geomCurved, geomStraight, tex, w: meta.w, h: meta.h, headOffset };
 }
 
 function mulberry32(a) {
@@ -437,7 +463,7 @@ function tick() {
     if (a.v < 0.05*a.L) stats.stallFrames++;
 
     a.mesh.position.x = a.x; a.mesh.position.y = a.y;
-    a.mesh.rotation.z = a.theta;
+    a.mesh.rotation.z = a.theta - fishTypes[a.fid].headOffset;
     if (a.uniforms) {
       a.uniforms.uPhase.value = a.phase;
       a.uniforms.uEnv.value += (a.envTarget - a.uniforms.uEnv.value) * Math.min(1, dt*6);
