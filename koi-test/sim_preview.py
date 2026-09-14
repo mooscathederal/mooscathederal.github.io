@@ -217,7 +217,7 @@ def render_frame(actors_states, canvasW, canvasH, mode="curved", occlusion=True,
         d = ImageDraw.Draw(base, "RGBA")
         f1 = get_font(int(canvasH*0.075), bold=True)
         f2 = get_font(int(canvasH*0.028))
-        d.text((canvasW*0.07, canvasH*0.17), "Nils Czarnetzki", font=f1, fill=(255,255,255,255))
+        d.text((canvasW*0.07, canvasH*0.17), "mooscathederal", font=f1, fill=(255,255,255,255))
         d.text((canvasW*0.072, canvasH*0.17+canvasH*0.10), "Persönliche Wissenschaft — Philosophie, Logik, MINT", font=f2, fill=(238,244,236,235))
     return base.convert("RGB")
 
