@@ -12,7 +12,7 @@
        padding:8px 12px;background:rgba(10,14,11,.72);backdrop-filter:blur(4px);z-index:5}
   #hud button{background:#1c2a1f;color:#e8f0e4;border:1px solid #3a4a3c;padding:5px 10px;cursor:pointer;font:12px/1 ui-sans-serif}
   #hud button.on{background:#2f5a38}
-  #stats{margin-left:auto;font-variant-numeric:tabular-nums;color:#a9bda3;white-space:pre}
+  #stats{margin-left:auto;font-variant-numeric:tabular-nums;color:#a9bda3;white-space:pre-wrap;text-align:right}
   .demo-title{position:absolute;left:6%;top:16%;color:#fff;font:700 clamp(28px,5vw,64px)/1.05 Georgia,serif;
        text-shadow:0 2px 18px rgba(0,0,0,.35);pointer-events:none}
   .demo-sub{position:absolute;left:6%;top:calc(16% + 4.6em);color:#eef4ec;font:400 clamp(13px,1.6vw,19px)/1.4 Georgia,serif;
@@ -28,6 +28,7 @@
     <button data-n="20">20</button>
     <button data-n="30" class="on">30</button>
     <button data-n="40">40</button>
+    <button data-k="reset">Stats↺</button>
     <span id="stats">…</span>
   </div>
   <div id="stage">
