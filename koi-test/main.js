@@ -94,7 +94,16 @@ function resize() {
   camera.updateProjectionMatrix();
   fHalfW = vw / 2; fHalfH = vh / 2;
 }
-window.addEventListener("resize", resize);
+window.addEventListener("resize", () => {
+  resize();
+  // Fischgroesse/-tempo sind domaenenrelativ kalibriert (siehe spawnActor) --
+  // nach einer Fenstergroessenaenderung (Rotation, Resize, DevTools) muss
+  // neu gespawnt werden, sonst laufen Akteure mit der ALTEN Domaenenskala in
+  // der NEUEN Randgeometrie weiter, was die Rand-/Fluchtphysik aus dem Tritt
+  // bringt (beobachtet: grosse maxJump-Werte und Hard-Resets direkt nach
+  // einem Resize-Event).
+  if (Object.keys(fishTypes).length && actors.length) setCount(actors.length);
+});
 
 function nearestSpine(lx, ly, sx, sy) {
   let bi = 0, bd = Infinity;
