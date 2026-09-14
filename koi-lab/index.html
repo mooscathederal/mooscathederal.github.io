@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Koi-Kinematik — Prüfstand</title>
+<style>
+  html,body{margin:0;height:100%;background:#0a0e0b;overflow:hidden;
+    font:13px/1.45 ui-sans-serif,system-ui,sans-serif;color:#dfe6da}
+  #stage{position:fixed;inset:0}
+  canvas{display:block;width:100%;height:100%}
+  #panel{position:fixed;top:0;right:0;width:296px;max-height:100%;overflow-y:auto;
+    background:rgba(9,13,10,.86);backdrop-filter:blur(6px);
+    border-left:1px solid #2b3a2e;padding:12px 14px 20px;z-index:5}
+  #panel h2{font-size:12px;letter-spacing:.12em;text-transform:uppercase;
+    color:#89a58d;margin:16px 0 8px;font-weight:600}
+  #panel h2:first-child{margin-top:0}
+  .r{margin-bottom:11px}
+  .r label{display:flex;justify-content:space-between;gap:8px;font-size:12.5px;margin-bottom:3px}
+  .r label .n{color:#a9bda3;font-variant-numeric:tabular-nums}
+  .r input{width:100%;accent-color:#c8553d;margin:0}
+  .r .hint{font-size:11px;line-height:1.35;color:#6f8273;margin-top:2px}
+  .btns{display:flex;flex-wrap:wrap;gap:6px}
+  button{background:#1b2a1f;color:#e8f0e4;border:1px solid #3a4a3c;padding:5px 10px;
+    cursor:pointer;font:12px/1 ui-sans-serif;border-radius:2px}
+  button.on{background:#2f5a38;border-color:#4a7a53}
+  #stats{position:fixed;left:10px;top:8px;z-index:5;white-space:pre;
+    font:12px/1.4 ui-monospace,monospace;color:#9fb79a;
+    text-shadow:0 1px 6px rgba(0,0,0,.8)}
+  #hide{position:fixed;right:306px;top:8px;z-index:6}
+  body.nopanel #panel{display:none}
+  body.nopanel #hide{right:10px}
+  @media (max-width:760px){
+    #panel{width:100%;max-height:54%;top:auto;bottom:0;border-left:none;border-top:1px solid #2b3a2e}
+    #hide{right:10px}
+  }
+</style>
+</head>
+<body>
+<div id="stage"></div>
+<div id="stats">…</div>
+<button id="hide">Regler</button>
+
+<div id="panel">
+  <h2>Szene</h2>
+  <div class="btns">
+    <button data-n="10">10</button>
+    <button data-n="20">20</button>
+    <button data-n="30" class="on">30</button>
+    <button data-n="40">40</button>
+    <button id="occl" class="on">Verdeckung</button>
+    <button id="reset">Zurücksetzen</button>
+  </div>
+
+  <h2>Körperwelle</h2>
+  <div class="r">
+    <label>Schwanzamplitude <span class="n" id="v_A_tail"></span></label>
+    <input type="range" data-k="A_tail" min="0.02" max="0.18" step="0.005">
+    <div class="hint">Ausschlag der Schwanzspitze, einseitig, in Rumpflängen. Gemessen an echten Fischen: etwa 0,09.</div>
+  </div>
+  <div class="r">
+    <label>Wellenlänge <span class="n" id="v_lambda"></span></label>
+    <input type="range" data-k="lambda" min="0.45" max="1.60" step="0.01">
+    <div class="hint">Wie viel Welle auf dem Körper liegt, in Rumpflängen. Karpfenartige: 0,8 bis 1,0.</div>
+  </div>
+  <div class="r">
+    <label>Kopfausschlag <span class="n" id="v_headAmp"></span></label>
+    <input type="range" data-k="headAmp" min="0" max="0.5" step="0.01">
+    <div class="hint">Anteil der Schwanzamplitude. Auf null wirkt der Kopf festgenagelt.</div>
+  </div>
+  <div class="r">
+    <label>Ort des Knotens <span class="n" id="v_dipAt"></span></label>
+    <input type="range" data-k="dipAt" min="0.08" max="0.45" step="0.01">
+    <div class="hint">Stelle, an der der Körper am ruhigsten ist — beim echten Fisch kurz hinter dem Kopf.</div>
+  </div>
+
+  <h2>Schlagfrequenz</h2>
+  <div class="r">
+    <label>Strouhal-Zahl <span class="n" id="v_St"></span></label>
+    <input type="range" data-k="St" min="0.12" max="0.60" step="0.01">
+    <div class="hint">Koppelt Schlag an Tempo: schneller heißt schneller schlagen. Effizienter Bereich 0,25 bis 0,35.</div>
+  </div>
+  <div class="r">
+    <label>Grundschlag <span class="n" id="v_f_min"></span></label>
+    <input type="range" data-k="f_min" min="0" max="1.5" step="0.05">
+    <div class="hint">Hertz. Was der Fisch auch im Leerlauf tut.</div>
+  </div>
+  <div class="r">
+    <label>Obergrenze <span class="n" id="v_f_max"></span></label>
+    <input type="range" data-k="f_max" min="1" max="6" step="0.1">
+  </div>
+
+  <h2>Schwanzflosse</h2>
+  <div class="r">
+    <label>Nachlauf <span class="n" id="v_phi"></span></label>
+    <input type="range" data-k="phi" min="0" max="180" step="1">
+    <div class="hint">Grad. Die Flosse folgt dem Körper verzögert — daraus entsteht ihr Anstellwinkel. Etwa 90 Grad.</div>
+  </div>
+  <div class="r">
+    <label>Flossenwinkel <span class="n" id="v_beta"></span></label>
+    <input type="range" data-k="beta" min="0" max="60" step="1">
+    <div class="hint">Grad, maximaler Winkel der Spitze gegen die Rumpfachse.</div>
+  </div>
+
+  <h2>Gemalte Haltung</h2>
+  <div class="r">
+    <label>Ruhekrümmung <span class="n" id="v_w_rest"></span></label>
+    <input type="range" data-k="w_rest" min="0" max="1" step="0.05">
+    <div class="hint">Wie viel von der ins Bild gemalten Biegung stehen bleibt. Bei 1 liegt ein gebogener Fisch dauerhaft in der Kurve.</div>
+  </div>
+  <div class="r">
+    <label>Kurvenlage <span class="n" id="v_c_turn"></span></label>
+    <input type="range" data-k="c_turn" min="0" max="1.6" step="0.05">
+    <div class="hint">Wie stark sich der Fisch beim Drehen in die Kurve legt.</div>
+  </div>
+</div>
+
+<script type="module" src="./app.js"></script>
+<script>
+  document.getElementById("hide").addEventListener("click", () =>
+    document.body.classList.toggle("nopanel"));
+</script>
+</body>
+</html>
