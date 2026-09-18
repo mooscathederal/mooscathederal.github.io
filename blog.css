@@ -81,7 +81,7 @@ body.leiste-offen .leiste { transform: translateX(0); }
   left: 50%;
   top: 50%;
   width: var(--kachel-breite);
-  transform: translate(-50%, calc(-50% + var(--dy, 0px))) scale(var(--s, 1));
+  transform: translate(calc(-50% + var(--dx, 0px)), calc(-50% + var(--dy, 0px))) scale(var(--s, 1));
   filter: brightness(var(--b, 1));
   z-index: var(--z, 1);
   transition: transform 0.35s ease, filter 0.35s ease, opacity 0.35s ease;
@@ -159,3 +159,61 @@ body.leiste-offen .leiste { transform: translateX(0); }
   html { scroll-behavior: auto; }
   .leiste, .kachel, .griff, .blatt { transition: none; }
 }
+
+
+/* ---------- Auswahlseite: waagerechtes Mühlrad in der Bildmitte ---------- */
+body.auswahl .waehler {
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.2rem;
+  padding: 2rem 0 calc(1.5rem + env(safe-area-inset-bottom));
+}
+.stapel-fenster.quer {
+  position: relative;
+  flex: none;                     /* nicht dehnen: die Höhe steht fest */
+  width: 100%;
+  height: clamp(13rem, 34vh, 20rem);
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(to right, transparent 0, #000 12%, #000 88%, transparent 100%);
+  mask-image: linear-gradient(to right, transparent 0, #000 12%, #000 88%, transparent 100%);
+}
+.stapel-fenster.quer .stapel { padding: 0; }
+.stapel-fenster.quer .stapel.bereit .kachel { width: clamp(11rem, 26vw, 16rem); }
+body.auswahl .stapel-name { min-height: 3.6rem; padding-top: 1.2rem; }
+body.auswahl .stapel-name .n-titel { font-size: 1.15rem; }
+/* Hinweis und Rückweg unten am Rand, damit das Rad die Mitte behält */
+body.auswahl .wink {
+  position: fixed;
+  left: 50%; transform: translateX(-50%);
+  bottom: calc(3.2rem + env(safe-area-inset-bottom));
+  margin: 0; font-size: 0.82rem; color: var(--leise); opacity: 0.7; text-align: center;
+  padding: 0 1.5rem; max-width: 34rem;
+}
+body.auswahl .zurueck {
+  position: fixed;
+  left: 50%; transform: translateX(-50%);
+  bottom: calc(0.9rem + env(safe-area-inset-bottom));
+  border: 0; padding: 0.3rem 0.6rem;
+}
+@media (max-width: 30rem) {
+  body.auswahl .wink { font-size: 0.76rem; }
+}
+
+/* ---------- Formeln (beim Bauen aus LaTeX erzeugt, ohne fremde Skripte) ---------- */
+.blatt .formel {
+  font-family: "Iowan Old Style", Georgia, serif;
+  font-style: italic;
+  text-align: center;
+  margin: 1.5rem 0;
+  font-size: 1.1rem;
+  letter-spacing: 0.01em;
+}
+.blatt span.formel { display: inline; margin: 0; font-size: 1em; }
+.blatt .formel sub, .blatt .formel sup { font-size: 0.7em; font-style: normal; }
+.blatt .formel .wort { font-style: normal; font-size: 0.94em; }
+.blatt .formel .luecke { display: inline-block; width: 1.1em; }
+.blatt .formel .luecke.klein { width: 0.35em; }

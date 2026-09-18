@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>QUALIA — fish don't fly</title>
+<title>QUALIA — FishdontFly</title>
 <meta name="description" content="Ich hab da so ne Idee...">
 <meta name="theme-color" content="#ede5e0">
 <meta property="og:type" content="article">
-<meta property="og:site_name" content="fish don't fly">
+<meta property="og:site_name" content="FishdontFly">
 <meta property="og:title" content="QUALIA">
 <meta property="og:description" content="Ich hab da so ne Idee...">
 <meta property="og:url" content="https://www.fishdontfly.site/blog/qualia.html">
@@ -25,7 +25,7 @@
 
 <aside id="leiste" class="leiste" aria-label="Beiträge">
   <div class="stapel-fenster">
-    <ul class="stapel">
+    <ul class="stapel" data-richtung="laengs">
         <li class="kachel" data-i="0"><a href="../blog/ich-mein-ja-nur.html"><span class="ohne-bild"><span>Was is eigentlich meine...</span></span><span class="kachel-titel">Was is eigentlich meine...</span><span class="kachel-datum">11.07.2026</span></a></li>
         <li class="kachel" data-i="1"><a href="../blog/das-herzlose-ohr.html"><span class="ohne-bild"><span>Das herzlose Ohr</span></span><span class="kachel-titel">Das herzlose Ohr</span><span class="kachel-datum">09.07.2026</span></a></li>
         <li class="kachel" data-i="2"><a href="../blog/lacheln-and-winken.html"><span class="ohne-bild"><span>Lächeln &amp; Winken</span></span><span class="kachel-titel">Lächeln &amp; Winken</span><span class="kachel-datum">03.07.2026</span></a></li>
@@ -189,56 +189,32 @@ kein Risiko</p>
 <ol>
 <li>Zustand</li>
 </ol>
-<p>$$
-x_t
-$$</p>
+<div class="formel">x<sub>t</sub></div>
 <ol start="2">
 <li>Zwei Forderungen</li>
 </ol>
-<p>$$
-A_t,\; B_t
-$$</p>
+<div class="formel">A<sub>t</sub>,<span class='luecke klein'></span> B<sub>t</sub></div>
 <ol start="3">
 <li>Beides gilt, passt nicht zusammen
-   $$
-   A_t = 1,\quad B_t = 1
-   $$</li>
+   <div class="formel">A<sub>t</sub> = 1,<span class='luecke'></span> B<sub>t</sub> = 1</div></li>
 </ol>
-<p>$$
-A_t \text{ und } B_t \text{ sind inkompatibel}
-$$</p>
+<div class="formel">A<sub>t</sub> <span class='wort'> und </span> B<sub>t</sub> <span class='wort'> sind inkompatibel</span></div>
 <ol start="4">
 <li>Spannung bleibt
-   $$
-   S_t &gt; 0
-   $$</li>
+   <div class="formel">S<sub>t</sub> > 0</div></li>
 <li>Auflösen kostet zu viel
-   $$
-   K_t &gt; k
-   $$</li>
+   <div class="formel">K<sub>t</sub> > k</div></li>
 <li>Es bleibt über Zeit
-   $$
-   G_t = \sum_{i=t-n}^{t} S_i
-   $$
-   $$
-   G_t &gt; g
-   $$</li>
+   <div class="formel">G<sub>t</sub> = ∑<sub>i=t-n</sub><sup>t</sup> S<sub>i</sub></div>
+   <div class="formel">G<sub>t</sub> > g</div></li>
 <li>Bindung an sich selbst
-   $$
-   M_t = \text{Selbstmodell}
-   $$</li>
+   <div class="formel">M<sub>t</sub> = <span class='wort'>Selbstmodell</span></div></li>
 </ol>
-<p>$$
-M_{t+1} = M_t + S_t
-$$</p>
+<div class="formel">M<sub>t+1</sub> = M<sub>t</sub> + S<sub>t</sub></div>
 <ol start="8">
 <li>Erleben
-   $$
-   Q_t = 1 \iff (S_t &gt; 0)\land(K_t &gt; k)\land(G_t &gt; g)\land(M_t)
-   $$
-   $$
-   \text{Qualia} \approx \text{Spannung + Kosten + Zeit + Selbstbindung}
-   $$</li>
+   <div class="formel">Q<sub>t</sub> = 1 iff (S<sub>t</sub> > 0)land(K<sub>t</sub> > k)land(G<sub>t</sub> > g)land(M<sub>t</sub>)</div>
+   <div class="formel"><span class='wort'>Qualia</span> ≈ <span class='wort'>Spannung + Kosten + Zeit + Selbstbindung</span></div></li>
 <li><strong>Cheat Sheet zur Notation</strong></li>
 </ol>
 <p>x_t = Zustand des Systems zur Zeit t
@@ -254,8 +230,6 @@ $$</p>
    <strong>⇔</strong> = genau dann, wenn
    ∧ = und
    ≈ = nicht exakt gleich, aber strukturell ähnlich</p>
-<hr />
-<p>===</p>
   </article>
 </main>
 
