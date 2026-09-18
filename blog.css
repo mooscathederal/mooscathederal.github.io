@@ -8,7 +8,7 @@
   --ordner: #f6cf8b;
   --leiste-breite: 15rem;
   --kachel-breite: 11rem;
-  --kachel-verhaeltnis: 4 / 3;      /* eher quadratisch; hier eine Zahl ändern reicht */
+  --kachel-verhaeltnis: 3 / 2;      /* Maß der Kacheln; eine Zahl ändern genügt */
 }
 
 * { box-sizing: border-box; }
@@ -90,6 +90,8 @@ body.leiste-offen .leiste { transform: translateX(0); }
 .kachel { width: 100%; }
 .stapel.bereit .kachel { width: var(--kachel-breite); }
 .kachel a { display: block; text-decoration: none; color: inherit; }
+.kachel .ohne-bild { display: grid; place-items: center; padding: 0.6rem; text-align: center; }
+.kachel .ohne-bild span { font-size: 0.86rem; line-height: 1.25; color: var(--kontur); opacity: 0.8; }
 .kachel img, .kachel .ohne-bild {
   display: block;
   width: 100%;
