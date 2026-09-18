@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>fish don't fly</title>
+<meta name="description" content="Fische fliegen nicht.">
+<meta name="theme-color" content="#2b3324">
+<link rel="preload" href="fische/hintergrund.webp" as="image" type="image/webp">
+<link rel="modulepreload" href="fische/koi.js">
+<link rel="stylesheet" href="start.css">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="fish don't fly">
+<meta property="og:url" content="https://www.fishdontfly.site/">
+<meta property="og:image" content="https://www.fishdontfly.site/vorschau.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="/favicon.png" type="image/png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta property="og:title" content="fish don't fly">
+<meta property="og:description" content="Gemalte Koi schwimmen über den Baumkronen.">
+</head>
+<body>
+<div class="buehne" aria-hidden="true">
+  <canvas id="koi"></canvas>
+</div>
+
+<main>
+  <section class="oben" aria-label="Start">
+    <h1 class="unsichtbar">Fische fliegen nicht</h1>
+    <a class="hinweis" href="#seiten" aria-label="Seiten zeigen">
+      <span></span><span></span><span></span>
+    </a>
+  </section>
+
+  <section class="unten" id="seiten" aria-label="Seiten">
+    <nav>
+      <ul class="ordnerreihe">
+        <!-- Neue Seite: weiteren <li> mit Link und Beschriftung anlegen. -->
+        <li><a class="ordner" href="notiz.html"><svg viewBox="0 0 120 92" aria-hidden="true"><use href="#ordner"/></svg><span>Notiz</span></a></li>
+      </ul>
+    </nav>
+  </section>
+</main>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="ordner" viewBox="0 0 120 92">
+    <path d="M9 13q0-6 6-6h25q4 0 6.5 3.2L52 17h55q6 0 6 6v62H9z" fill="var(--ordner-hinten)" stroke="var(--kontur)" stroke-width="4.5" stroke-linejoin="round"/>
+    <path d="M25 31q1.2-5.5 6.5-5.5H111q6 0 4.8 6L105 80q-1.2 5.5-6.5 5.5H13q-5.5 0-4.3-5.5z" fill="var(--ordner)" stroke="var(--kontur)" stroke-width="4.5" stroke-linejoin="round"/>
+  </symbol>
+</svg>
+
+<script type="module">
+import { startKoi } from "./fische/koi.js";
+const buehne = document.querySelector(".buehne"), canvas = document.getElementById("koi");
+const q = new URLSearchParams(location.search);
+startKoi(canvas, { seed: q.has("seed") ? +q.get("seed") : undefined, onLost: () => buehne.classList.remove("laeuft") })
+  .then((info) => { window.__koi = info; buehne.classList.add("laeuft");
+    if (q.has("fps")) {   // Prüfhilfe: Bildrate und Fischzahl einblenden
+      const el = Object.assign(document.createElement("div"), { style: "position:fixed;right:8px;top:8px;z-index:9;font:12px monospace;background:#000a;color:#fff;padding:4px 8px;border-radius:4px" });
+      document.body.append(el); let f = info.frames, t = performance.now();
+      setInterval(() => { const n = performance.now(); el.textContent = `${((info.frames - f) * 1000 / (n - t)).toFixed(0)} fps  ${info.fish} Fische  ${innerWidth}×${innerHeight} @${devicePixelRatio}`; f = info.frames; t = n; }, 1000);
+    } })
+  .catch((e) => { window.__koiFehler = String(e); canvas.remove(); });   // Rückfall: stehendes Hintergrundbild
+
+const hinweis = document.querySelector(".hinweis");
+const setzeHinweis = () => hinweis.classList.toggle("weg", scrollY > 24);
+addEventListener("scroll", setzeHinweis, { passive: true }); setzeHinweis();
+</script>
+</body>
+</html>
