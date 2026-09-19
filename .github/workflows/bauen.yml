@@ -1,0 +1,93 @@
+name: Website bauen und veröffentlichen
+
+# Läuft bei jedem Push auf main und auf Knopfdruck (Reiter Actions -> "Run workflow").
+# Ablauf: Namensschutz -> Blog aus quellen/beitraege bauen -> Seite prüfen -> veröffentlichen.
+# Schlägt ein Schritt fehl, geht nichts online: die bisherige Seite bleibt stehen, GitHub schickt eine Mail.
+#
+# Einmalig im Repo einzustellen (Settings):
+#   Pages -> Build and deployment -> Source: "GitHub Actions"
+#   Secrets and variables -> Actions -> Secret NAMENSSCHUTZ_BEGRIFFE
+#     (Inhalt der Datei Werkzeuge/namensschutz.begriffe, eine Zeile je Begriff)
+#
+# Warum nicht "bauen und zurückcommitten": Commits, die ein Workflow mit dem Standard-Token pusht,
+# lösen keinen Pages-Bau aus (GitHub-Doku, "Configuring a publishing source"). Deshalb wird die fertige
+# Seite direkt veröffentlicht; quellen/ und werkzeug/ gehören nicht zur veröffentlichten Seite.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  bauen:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Namensschutz
+        env:
+          BEGRIFFE: ${{ secrets.NAMENSSCHUTZ_BEGRIFFE }}
+        run: |
+          if [ -z "$(printf '%s' "$BEGRIFFE" | tr -d '[:space:]')" ]; then
+            echo "::error::Das Secret NAMENSSCHUTZ_BEGRIFFE fehlt oder ist leer. Ohne Begriffsliste wird nichts veröffentlicht."
+            exit 1
+          fi
+          MUSTER=$(printf '%s\n' "$BEGRIFFE" | tr -d '\r' | sed '/^[[:space:]]*$/d' | paste -sd'|' -)
+          TREFFER=$(grep -r -i -l -I -E -e "$MUSTER" . --exclude-dir=.git || true)
+          NAMEN=$(find . -path ./.git -prune -o -print | grep -i -E -e "$MUSTER" || true)
+          if [ -n "$TREFFER$NAMEN" ]; then
+            echo "::error::Namensschutz: Klarname gefunden. Es wird nichts veröffentlicht."
+            [ -n "$TREFFER" ] && { echo "In Dateien:"; echo "$TREFFER"; }
+            [ -n "$NAMEN" ] && { echo "In Dateinamen:"; echo "$NAMEN"; }
+            exit 1
+          fi
+          echo "Namensschutz: sauber."
+
+      - name: Blog bauen
+        # Ohne Fremdpakete, wie in der lokalen Vorschau; BLOG_BORDMITTEL=1 schließt Zufallsfunde auf dem Runner aus.
+        env:
+          BLOG_BORDMITTEL: '1'
+        run: |
+          python3 --version
+          python3 werkzeug/baue_blog.py
+
+      - name: Seite zusammenstellen
+        run: |
+          mkdir _site
+          tar -cf - \
+            --exclude='./.git' --exclude='./.github' --exclude='./_site' \
+            --exclude='./quellen' --exclude='./werkzeug' --exclude='./.gitignore' \
+            --exclude='.DS_Store' . | tar -xf - -C _site
+
+      - name: Seite prüfen
+        run: python3 werkzeug/pruefe_seite.py _site
+
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: _site
+
+  veroeffentlichen:
+    needs: bauen
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5

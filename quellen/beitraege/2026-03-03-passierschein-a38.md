@@ -1,0 +1,100 @@
+---
+titel: "Passierschein"
+untertitel: "Kanon"
+datum: 2026-03-03
+kennung: "passierschein-a38"
+---
+
+Manchmal fängt es ganz harmlos an. Mit so einem Satz, der sich selbst schnell ein Geländer dranschraubt, damit ja niemand runterfällt.
+
+Dieses:
+
+„Nur damit du mich nicht falsch verstehst …” „Ich weiß, das klingt hart, aber …” „Eigentlich meinte ich …”
+
+Während ich das sage, merke ich nicht einmal, dass ich längst nicht mehr rede. Ich verhandle. Niemand hat mich angeklagt. Ich baue das Gericht und reiche sofort meinen Antrag ein. Kleine, höfliche Häppchen über den Tisch. Nicht, weil ich gern erkläre. Weil irgendwo ein stilles Urteil fallen könnte und ich es rechtzeitig abfangen will.
+
+Meistens merke ich es erst später. Wenn das Gespräch im Kopf zurückläuft, obwohl es längst vorbei ist. Wenn mein Körper noch so tut, als müsste er aufpassen. Als könnte gleich etwas nachkommen. Dabei ist keiner mehr da. Trotzdem hänge ich an diesem Punkt. An dem Moment, in dem ich angefangen habe, mich zu erklären, obwohl niemand gefragt hat.
+
+Ich sehe das an mir. Ich sehe das an anderen. Wir sprechen, als müssten das Recht auf Raum erst verdient werden.
+
+Dabei könnte es einfacher sein. Ein Bedürfnis ist kein Antrag. Es braucht keine Genehmigung, keine Begründung und keinen günstigen Moment. Es ist auch schon da, bevor es höflich verpackt wird.
+
+Trotzdem fühlt es sich manchmal für mich genauso an. Als müsste jedes „Ich will” noch eine Beilage aus Gründen bekommen, damit es nicht nach „zu viel” klingt. Als müsste ich schnell hinterherschieben. Keine Sorge. Ich bin nicht kompliziert. Ich bin nicht unbequem. Ich nehme nicht zu viel Platz. Bitte sei nicht genervt.
+
+Von außen klingt das sogar vernünftig. Erwachsen und nett. Zivilisiert sowieso. Man poliert die Worte, damit sie niemandem wehtun. Damit der andere sich nicht bewegen muss. Damit sich niemand ertappt fühlt und man gemocht werden kann.
+
+Irgendwann merke ich es. Dabei spreche ich so, dass der andere nicht ausweichen muss, und verschwinde dabei selbst ein bisschen.
+
+Danach nehme ich mir vor, nicht überzuerklären. Klarheit ist nicht das Problem. Hinter dem Übermaß steckt selten Information. Meistens Angst. Angst, dass ich nicht reiche, wenn es nicht auch noch logisch klingt. Dass mein Innenleben erst dann gültig wird, wenn es sich wie ein sauberer Vortrag anhört. Einleitung, Hauptteil, Fazit. Und bitte mit Quellenangabe.
+
+Man kann das sogar moralisch adeln. In Differenziertheit oder Reflexion. Erwachsene sehen mehrere Seiten. Erwachsene sind reflektiert.
+
+Iss klar.
+
+Klingt wie ein Du-Problem mit meinem Namen drauf.
+
+Den Unterschied spüre ich nicht im Kopf, sondern im Körper. Erklären, um Verbindung zu schaffen, richtet auf. Erklären, um nicht verlassen zu werden, macht klein. Im ersten Fall will ich gesehen werden. Im zweiten will ich nicht fallen.
+
+Dieser Reflex ist heute fast normal. Ablehnung kommt selten als klares Nein. Sie kommt als Temperaturwechsel. Ein Blick weniger. Das zögern zwischen dem Satz. Der Ton, der minimal kippt. Ich ertrage nicht, dass der andere ungewiss bleibt, also mache ich ihn berechenbar und verliere uns dabei.
+
+Diese Kälte lese ich, bevor sie ausgesprochen wird. Deshalb versuche ich sie zu verhindern. Nebensätze. Rechtfertigungen. Entschärfung. Die Stimme wird kleiner, bevor jemand anderes sie klein macht.
+
+Erklärung wird so zu einem Mantel. Nicht, um gut auszusehen, sondern nicht zu zittern.
+
+Das Perfide daran. Je mehr ich mich erkläre, desto weniger stehe ich. Ich klinge verhandelbar. Als würde ich selbst nicht ganz glauben, dass mir das zusteht. Als das ich meine Grenze höflich beantragen müsste. So nach dem Motto. Wenn ihr es nicht mögt, kann ich es auch anders gemeint haben. Ich habe Angst, Zugehörigkeit oder Wärme zu verlieren.
+
+Es kommt dieses schnelle Alles gut, sobald ich im Gesicht des anderen den kleinsten Schatten sehe. Manchmal gilt die Angst nicht dem anderen. Sondern mir selbst. Meinem Inneren, sobald es nicht gespiegelt wird. Begleitet von dem schäbigen Gefühl. Vielleicht war’s zu viel. Als wäre ich selbst der Makel, den ich abstellen sollte.
+
+Dann passiert etwas, das nach Moral aussieht, aber Überleben ist. Ich werde achtsam und reflektiert. So sehr, dass niemand mehr richtig etwas an mir festhalten kann. Ich zeige mich mit Sicherheitsabstand. Sage ich, „ich” steht dabei im Konjunktiv. So fang ich an in einer Version von mir zu leben, die niemand anstößig finden kann.
+
+Das ist der Preis eines Klimas, in dem ich mich ständig beobachtet fühle. Weniger die große Zensur. Als die unscheinbare. Die, die ich mir selbst antue, weil ich es irgendwann gelernt habe. Zugehörigkeit hat Bedingungen. Es gibt eine richtige Art zu fühlen, eine richtige Art zu sprechen. Und eine richtige Dosis Mensch.
+
+Das Tückische: Meist bleibt alles freundlich. Feedback. Diskurs.
+
+Genau deshalb ist die Unsicherheit so zäh. Ich weiß nie, ob ich wirklich abgelehnt werde oder ob ich mich nur besser hätte erklären müssen. Also erkläre ich mich. Einmal. Noch einmal. Immer und immer wieder. Irgendwann klingt meine Stimme nicht mehr wie eine Stimme, sondern wie ein Antrag.
+
+Ich werde gefragt, ob diese Texte wirklich von mir sind. Ich wünschte, ich wäre so gelassen, wie ich dann tue. Dabei springt in mir sofort dieser Reflex an. Erklären, beweisen, absichern. Als müsste ich belegen, dass ich echt sei. Mir das Recht, so zu fühlen, jedes Mal neu verdienen müsste.
+
+Ich schreibe genau deshalb. Da ist etwas in mir, das raus will und keine Form hat. Erst wenn es dasteht, erkenne ich es. Nicht um zu überzeugen. Um überhaupt da zu sein.
+
+Die eigentliche Frage ist nicht, wer es geschrieben hat. Sondern was es in dir berührt.
+
+Da ist dieser Satz, der weniger nach Urteil klingt als Ertappen. Wer sich ständig erklärt, bittet um Erlaubnis zu existieren. Erklären ist nicht das Problem. Ständiges Erklären sagt: Dein Dasein ist verhandelbar.
+
+Erkennbar daran, wie schnell ich mich relativiere. Wie oft ein klares Gefühl sofort ein aber bekommt. Wie oft eine Grenze nicht als Grenze kommt, sondern als Vorschlag. Meine Grenzen erkenne ich oft erst, wenn sie überschritten wurden. Von anderen oder von mir selbst. Bitter, aber wahr.
+
+Das Nachbeben verrät es. Die Müdigkeit nach einem Gespräch, in dem ich zu nett war. Die Wut, die erst später auftaucht. Das Gefühl, mich irgendwo liegengelassen zu haben, nur damit die Verbindung nicht reißt. Das Gefühl kam nicht zu spät. Sein Platz war besetzt.
+
+Dann ist Übererklären wie ein trojanisches Pferd, das ich selbst reintrage. Es sieht aus wie Frieden, innen sitzt die alte Angst, nicht genügen zu dürfen. Irgendwann lebe ich nicht mehr in dem, was ich sage, sondern in dem, was ich verhindere. Konflikt. Ein Missverständnis. Irgendeine Ablehnung.
+
+Drei Mal derselbe Tausch. Anwesenheit gegen Berechenbarkeit. Kontakt wird nicht mehr ausgehalten, sondern verwaltet.
+
+Wir verwechseln ständig Perspektive und Wahrheit. Ich halte etwas für wahr. Du hältst etwas anderes für wahr. Zwei Menschen sitzen sich gegenüber, beide spüren. So ist es. Und nichtsdestotrotz leben wir in unterschiedlichen Welten.
+
+Lasse ich das wirklich zu, muss ich weniger erklären. Dann reicht es, anzuerkennen. Mein Inneres taucht nicht automatisch in deinem System auf. Trotzdem bin ich nicht verpflichtet, es so lange umzubauen, bis es bei dir passt. Meine Wünsche, meine Positionen, mein Selbst. Das ist durch mein ganzes Leben geformt. Ich kenne dieses Leben. Du nicht.
+
+Was genau muss ich eigentlich erklären? Nicht aus Trotz. Aus stiller Logik. Es gibt Dinge, die brauchen kein Warum. Nicht, weil sie über allem stehen, sondern weil sie schon da sind. Wie ein Atem. Ich erkläre ja normalerweise auch nicht, warum ich atme. Ich atme einfach. Wenn ich nicht atme, merke ich es sofort.
+
+Trotzdem fang ich immer wieder damit an Gründe nach zuliefern, als müsste ich beweisen, dass Recht so zu sein verdienen. Als das Persönlichkeit nur dann akzeptabel ist, wenn sie argumentativ wasserdicht sei.
+
+Erwachsensein ist unaufgeregter. Nicht zu überzeugen, sondern zu stehen. Klingt leicht. Ist es aber nicht. Weil dann der Zweifel kommt. Was auch sonst. Natürlich kommt er. Vielleicht ist das zu hart. Bin ich egoistisch. Oder zu viel. Erklären kann ja auch Demut sein. Rücksicht. Reife. Und ja, manchmal stimmt das. Nur kippt es so schnell.
+
+Demut hat einen geraden Rücken. Unsicherheit nicht. Demut erklärt, um zu verbinden. Unsicherheit erklärt, um nicht verlassen zu werden. Wenn ich ehrlich bin, spüre ich das. An der Hast. Der kleinen Panik in den Nebensätzen. Dem Drang, mein Gefühl sofort zu entschärfen, bevor es jemand anderes tut.
+
+Gefühle sind nicht gefährlich. Sie machen sichtbar, dass ich verletzlich bin. Verletzlichkeit ist heute oft nur dann erlaubt, wenn sie sich sofort wieder entschuldigt. Wenn sie gleich noch sagt. Ist schon okay. War nicht so gemeint. Vergiss es.
+
+Es geht nicht um richtig oder falsch. Es geht um Selbstwert. Wer fest steht, muss nicht drängen, nicht überzeugen. Er darf sogar falsch liegen, ohne zu verschwinden. Und sagen: So ist es für mich. Punkt. Das ist keine Härte. Das ist eine leise Form von Frieden.
+
+Die Gegenbewegung ist keine große Geste. Sie ist fast langweilig und gerade deshalb so schwer. Sie heißt, konsequent sein. Nicht moralisch. Existenziell. Dieses stille. Tu, was du sagst. Sag, was du tust. Nicht als Drohung. Als Selbstkontakt.
+
+Was ich brauche, brauche ich. Was ich nicht will, will ich nicht. Wenn ich da bin, bin ich da. Auch ohne Antrag.
+
+Ich darf geben, ohne mich zu verlieren. Nähe zulassen, ohne mich als Eintrittskarte zu benutzen. Erklären, ohne um Erlaubnis zu bitten.
+
+Vielleicht beginnt es wirklich ganz klein. Mit einem Satz weniger. Mit einem Atemzug mehr. Mit dem Mut, einen Gedanken stehen zu lassen, ohne ihn sofort zu polstern. Nicht als Trotz. Nicht als Show. Als Würde. Ein einfaches Stehenbleiben und merken, dass die Welt nicht einstürzt.
+
+Kürzer im Außen. Klarer im Inneren. Nicht laut. Nicht siegreich. Still sein.
+
+Und trotzdem da.
+
+**Überarbeitet**: 30.06.26

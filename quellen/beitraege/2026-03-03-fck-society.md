@@ -1,0 +1,61 @@
+---
+titel: "f*ck society"
+untertitel: "„Fuck society“ ist selten bloß Rebellion, meist der Punkt, an dem Anpassung nur noch wie Selbstverrat schmeckt."
+datum: 2026-03-03
+kennung: "fck-society"
+---
+
+Nichts daran ist nur privat.
+
+Bedürftigkeit ist nicht nur ein inneres Thema. Sie ist auch ein Klima. Ein Klima entsteht aus Anreizen, Rollen, Erwartungen, Sanktionen. Selten ein gezielter Angriff. Meist ein Dauerzug. Du gewöhnst dich an Kälte, bis du vergisst, dass du frierst.
+
+In vielen heutigen Beziehungsräumen ist Nähe leicht erreichbar. Bindung wirkt gleichzeitig teurer. Du bekommst Kontakt ohne Aufwand. Verbindlichkeit nur mit Risiko. Nähe wird angeboten wie ein Produkt. Beziehung wird gerahmt wie ein Projekt am eigenen Ich. Gefühl ist willkommen. Pflicht wirkt schnell verdächtig. Alles darf weich sein, solange es kein Gewicht trägt. Sobald es Gewicht trägt, heißt es: zu viel.
+
+Apps, Chats, Optionen. Das ist Freiheit. Und es ist ein Umfeld, in dem Austauschbarkeit immer mitläuft.
+
+Du schreibst: Bis du noch da?
+Drei Punkte. Nichts.
+Und tust so, als wäre es egal, weil „egal” Status rettet.
+Innen zählt der Körper Sekunden. Außen spielt das Gesicht Unabhängigkeit.
+
+Und irgendwann schützt du dich mit genau der Kälte, unter der du leidest. Jedes coole „egal” bringt dem anderen bei, dass Bedürfnis hier nichts zu suchen hat. Aus Schutz wird Stil. Aus Stil wird Unverbindlichkeit. Und am Ende heißt es Leichtigkeit.
+
+Wenn Alternativen ständig sichtbar sind, wird jedes Genug fragiler. So verhandelst du nicht mehr mit einer Person. Du verhandelst mit der Option anderer Personen. Unsichtbar. Andauernd. Das verändert, wie sicher sich ein Ja anfühlt. Anwesenheit verliert ihre Selbstverständlichkeit.
+
+Diese Logik verschiebt auch die Sprache. Anspruch bekommt einen schlechten Ruf. Anspruch ist per se nicht falsch. Nur sieht Anspruch in einem austauschbaren Umfeld schnell nach Kontrolle aus. Wer etwas braucht, riskiert Statusverlust. Wer etwas fordert, Abwertung. Also spielt man anspruchslos. Alles easy. Und hofft, niemand hört, was darunter liegt: Bitte verletz mich nicht. Bitte mach mich nicht lächerlich. Bitte lass mich nicht der sein, der mehr will.
+
+So entsteht eine Norm, die viele kennen und nachspielen. Intensität ist erlaubt, solange sie nichts kostet. Wärme ist erlaubt, solange sie keine Verantwortung auslöst. Verbindlichkeit nur, solange sie ungesagt bleibt. Ungesagt heißt: keine Haftung.
+
+Wenn niemand zu viel sein will, wird Kommunikation indirekt. Man fragt nicht: Bist du noch da. Man sendet Zeichen. Macht Witze. Testet. Wird spitz und nennt es ehrlich. Klarheit bleibt aus, wo Spannung übernimmt. Rückzug bleibt so offen. Es wirkt sicherer, weil es das Risiko verteilt. Man bleibt nah genug für Wärme und weit genug für Flucht.
+
+Dazu passt eine schnelle Diagnose-Sprache: Unhealthy. Toxic. Too much. Attachment problems. Diese Wörter können treffen. Sie können auch als Ausstieg dienen. Begriffe machen den Abbruch sauber.
+
+Der Ex wird zum Narzissten. Aus Schmerz wird Richtung. Manchmal stimmt das. Oft erledigt das Wort etwas anderes. Es beendet die Frage, ob man selbst geliebt hat oder nur gebraucht wurde. Solange der andere krank ist, muss man die eigene Sehnsucht nicht mehr aushalten und die Scham darüber auch nicht. Das Label tötet nicht den Ex. Es tötet die eigene Ambivalenz. Bequem, weil man schneller heilt. Teuer, weil man nie wieder an die Frage kommt, was man selbst gebraucht und nicht gegeben hat. Man beendet ohne Erklärung. Man verschwindet ohne Konsequenz. Nicht immer böse. Oft bequem. Und Bequemlichkeit wird im System belohnt. Nicht bei allen. Aber oft genug. Der Rückzug bekommt nachträglich einen Grund.
+
+Dann kommt das Ideal des regulierten Ichs. Gesund, reflektiert und selbstverantwortlich. In dieser Reihenfolge. Das ist sinnvoll, bis es zur Moral wird. Dann wird jedes Angewiesen-Sein verdächtig. Als wäre Erwachsensein Autarkie. Als dürfte Liebe nichts brauchen.
+
+Aber Liebe braucht. Nicht immer. Nicht alles. Nicht grenzenlos. Trotzdem: Sie braucht. Und wenn eine Umgebung Bedürfnis als peinlich rahmt, entstehen Schattenformen von Nähe. Menschen, die unabhängig wirken und innerlich hungern. Menschen, die Bindung wollen und sich dafür schämen. Menschen, die Sicherheit suchen und nur als Option ertragen, weil alles andere zu riskant wirkt.
+
+Was du brauchst, war nicht falsch. Es erscheint dir irgendwann als das, was an dir nicht stimmt: Was stimmt nicht mit mir.
+
+Hier wird es brutal. Zur Angst kommt Scham. Scham macht heimlich. Scham macht testend. Nicht weil du manipulieren willst. Offenes Bedürfnis macht angreifbar. Und Angreifbarkeit gilt als Fehler. Also tarnt man den Bedarf. Tut kühl. Lustig. Und locker sowieso. Innerlich zählt jede Pause, weil man gelernt hat: Pausen können normal sein. Pausen können Abwertung sein. Schweigen kann nichts heißen. Und genauso gut ein langsamer Abbruch.
+
+In so einem Klima ist Wachsamkeit nicht mehr irrational. Sie ist eine plausible Reaktion auf echte Unsicherheit. Dein Nervensystem reagiert nicht auf Fantasie. Es reagiert auf Möglichkeiten. Möglichkeiten, die in diesem Rahmen real sind: Menschen können gehen, ohne zu erklären. Menschen können wechseln, ohne Schuldgefühl. Menschen können verschwinden, ohne sozialen Preis.
+
+Der harte Punkt ist dieser: Wenn Strukturen Verbindlichkeit unklar halten, steigt der Druck, Sicherheit anders zu organisieren. Manche organisieren sie über Rückzug. Manche über Kontrolle. Manche über Tests. Manche über Deutung. Wenn der Boden fehlt, baut der Körper Geländer, und von außen sehen sie aus wie zu viel.
+
+Hier wird das Private politisch. Als Struktur. Dein Innenleben entsteht nicht im luftleeren Raum. Es entsteht in Umgebungen, die Rückzug erleichtern und Risiko ästhetisieren. Bindung wirkt wie Gefahr. Unverbindlichkeit wirkt wie Stil.
+
+Die Lösung ist nicht, weniger zu brauchen. Die Lösung ist, Nähe wieder eindeutig zu machen. Sag, was gilt. Was du willst. Sag, was du geben kannst. Und sag auch, was du nicht geben kannst. Klarheit ist Hygiene, keine Romantikbremse. Sie verhindert Intimität nicht. Sie macht Intimität bewohnbar.
+
+Denn locker ist oft nur ein Deal, den niemand ausspricht: Ich tue so, als brauche ich dich nicht, wenn du so tust, als könntest du mich nicht verlieren. Das ist keine Freiheit. Das ist Risikoauslagerung.
+
+Zeit ist der Souverän, ja. Aber die Gegenwart ist der Stil. Und unser Stil ist: warm wirken, ohne haftbar zu werden.
+
+Ich schreibe das nicht, weil ich glaube, dass sich daran bald etwas ändert. Mir geht es vor allem darum, mir zu beweisen, dass ich es kann. Gedanken in klare Sätze fassen. Ohne Entschuldigung. Ohne Nebel.
+
+Klarheit bindet niemanden. Sie bindet mich an meine Würde.
+
+Der Abschluss ist simpel: Nicht die Welt muss sich bewegen. Ich muss mich nicht verlieren. Ich kann benennen. Ich kann klar bleiben. Und das reicht als Beweis.
+
+**Überarbeitet:** 29.06.26
