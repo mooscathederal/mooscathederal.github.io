@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>18-09-2026</title>
+
+<!-- ═════ ÜBERSICHT ═════
+ #A KENNGRÖSSEN  Zeilen "name wert"           -> Aussehen des Rasters      (Steuerblock unten)
+ #B BEFEHLE      Zeilen "befehl nummern"      -> Reihenfolge der Bilder    (Steuerblock unten)
+ #C STIL         CSS                          -> nur ändern, wenn nötig
+ #D MOTOR        JavaScript                   -> nicht anfassen
+ Nur #A und #B bearbeiten: speichern, Seite neu laden, fertig. -->
+
+<script type="text/plain" id="steuerung">
+# Grammatik: eine Anweisung pro Zeile. "#" beginnt einen Kommentar bis Zeilenende. Leerzeilen egal.
+# Nummern: 7 oder 07 | Bereich 5-9 | mehrere mit Leerzeichen: 7 3 5-9
+
+#A ═══ KENNGRÖSSEN ═══  (Format: name wert)  Standard gilt, wenn Zeile fehlt
+spalten-pc      5        # Zahl 4–6      Bilder pro Reihe ab 700 px Breite (Rechner, Tablet quer)
+spalten-handy   2        # Zahl 2–3      Bilder pro Reihe darunter
+abstand         mittel   # eng | mittel | weit          Lücke zwischen Bildern (6 | 12 | 22 px)
+rand            mittel   # schmal | mittel | breit      Seitenrand (8 | 20 | 40 px)
+rundung         klein    # keine | klein | mittel | gross   Ecken (0 | 4 | 10 | 20 px)
+form            4zu3     # 4zu3 | quadrat               Kachelform, für alle gleich (quadrat schneidet Ränder ab)
+maxbreite       1600     # Zahl 900–2400 px             breiter wird das Raster auf großen Bildschirmen nicht
+nummern         an       # an | aus                     Nummer auf jeder Kachel (zum Ordnen nützlich)
+hintergrund     fuellend # fuellend | kacheln           Papierbild füllt Fenster | wiederholt sich in Originalgröße
+
+#B ═══ BEFEHLE ═══  (laufen von oben nach unten; Ausgangsordnung ist 01 … 44)
+# Beispiele – Raute vorne entfernen zum Aktivieren:
+# anfang  07 03        # diese Bilder ganz nach vorn, in dieser Reihenfolge
+# ende    44           # ganz nach hinten
+# vor     12 : 03 05   # 03 und 05 direkt vor Bild 12 setzen
+# nach    12 : 03      # 03 direkt hinter Bild 12 setzen
+# tausche 03 04        # zwei Bilder tauschen
+# weg     09 10-11     # ausblenden (Datei bleibt erhalten)
+</script>
+
+<!-- #C STIL -->
+<style>
+:root{--pc:5;--hd:2;--ab:12px;--rn:20px;--rd:4px;--ratio:4/3;--max:1600px}
+*{box-sizing:border-box}
+body{margin:0;background:#f3efe6;color:#333;font:13px/1.4 system-ui,sans-serif}
+body::before{content:"";position:fixed;inset:0;z-index:-1;background:url(hintergrund/hintergrund.jpg) center/cover}
+body.kacheln::before{background-size:auto;background-position:0 0;background-repeat:repeat}
+main{max-width:var(--max);margin:0 auto;padding:var(--rn)}
+#raster{display:grid;gap:var(--ab);grid-template-columns:repeat(var(--hd),minmax(0,1fr))}
+@media(min-width:700px){#raster{grid-template-columns:repeat(var(--pc),minmax(0,1fr))}}
+.k{position:relative;display:block;aspect-ratio:var(--ratio);border-radius:var(--rd);overflow:hidden;background:#ddd;box-shadow:0 1px 4px #0003}
+.k img{display:block;width:100%;height:100%;object-fit:cover}
+.k b{position:absolute;left:6px;bottom:6px;padding:1px 6px;border-radius:9px;background:#000a;color:#fff;font-weight:500}
+body.nr-aus .k b{display:none}
+#fehler{margin:0 0 var(--ab);padding:8px 12px;border-radius:6px;background:#fdd;color:#900;white-space:pre-line}
+</style>
+</head>
+<body>
+
+<main>
+<p id="fehler" hidden></p>
+<div id="raster"></div>
+</main>
+
+<!-- #D MOTOR – nicht anfassen -->
+<script>
+(()=>{
+const N=44, fehler=[];
+const K={ // Kenngrößen: Standard, Prüfung, Umsetzung in CSS
+ 'spalten-pc':{d:5,z:[4,6],v:'--pc'},
+ 'spalten-handy':{d:2,z:[2,3],v:'--hd'},
+ abstand:{d:'mittel',w:{eng:'6px',mittel:'12px',weit:'22px'},v:'--ab'},
+ rand:{d:'mittel',w:{schmal:'8px',mittel:'20px',breit:'40px'},v:'--rn'},
+ rundung:{d:'klein',w:{keine:'0px',klein:'4px',mittel:'10px',gross:'20px'},v:'--rd'},
+ form:{d:'4zu3',w:{'4zu3':'4/3',quadrat:'1/1'},v:'--ratio'},
+ maxbreite:{d:1600,z:[900,2400],v:'--max',px:1},
+ nummern:{d:'an',w:{an:1,aus:1}},
+ hintergrund:{d:'fuellend',w:{fuellend:1,kacheln:1}}
+};
+const wert={}; for(const k in K) wert[k]=K[k].d;
+let ord=Array.from({length:N},(_,i)=>i+1), weg=new Set();
+
+const nums=(s,z)=>s.trim().split(/\s+/).filter(Boolean).flatMap(t=>{
+ const m=t.match(/^(\d+)(?:-(\d+))?$/); if(!m) throw `"${t}" ist keine Nummer`;
+ const a=+m[1], b=m[2]?+m[2]:a;
+ for(const x of [a,b]) if(x<1||x>N) throw `${x} liegt außerhalb 1–${N}`;
+ return Array.from({length:Math.abs(b-a)+1},(_,i)=>a<=b?a+i:a-i);
+});
+const ohne=L=>ord.filter(x=>!L.includes(x));
+const C={ // Befehle
+ anfang:s=>{const L=nums(s);ord=[...L,...ohne(L)]},
+ ende:s=>{const L=nums(s);ord=[...ohne(L),...L]},
+ vor:s=>setze(s,0), nach:s=>setze(s,1),
+ tausche:s=>{const[a,b]=nums(s); if(nums(s).length!=2) throw 'tausche braucht genau zwei Nummern';
+  const i=ord.indexOf(a),j=ord.indexOf(b);[ord[i],ord[j]]=[ord[j],ord[i]]},
+ weg:s=>nums(s).forEach(x=>weg.add(x))
+};
+function setze(s,dz){
+ const[t,l]=s.split(':'); if(l===undefined) throw 'Format: vor|nach ZIEL : NUMMERN';
+ const T=nums(t); if(T.length!=1) throw 'ZIEL muss genau eine Nummer sein';
+ const L=nums(l); if(L.includes(T[0])) throw 'ZIEL darf nicht in der Liste stehen';
+ const r=ohne(L); r.splice(r.indexOf(T[0])+dz,0,...L); ord=r;
+}
+
+document.getElementById('steuerung').textContent.split('\n').forEach((zeile,n)=>{
+ const t=zeile.replace(/#.*/,'').trim(); if(!t) return;
+ const i=t.search(/\s/), name=i<0?t:t.slice(0,i), rest=i<0?'':t.slice(i).trim();
+ try{
+  if(K[name]){
+   const k=K[name];
+   if(k.z){const x=+rest; if(!(x>=k.z[0]&&x<=k.z[1])) throw `erlaubt ${k.z[0]}–${k.z[1]}`; wert[name]=x}
+   else{ if(!(rest in k.w)) throw `erlaubt: ${Object.keys(k.w).join(' | ')}`; wert[name]=rest}
+  } else if(C[name]) C[name](rest);
+  else throw 'unbekanntes Wort';
+ }catch(e){fehler.push(`Zeile ${n+1} (${name}): ${e}`)}
+});
+
+const root=document.documentElement.style;
+for(const k in K) if(K[k].v) root.setProperty(K[k].v, K[k].w?K[k].w[wert[k]]:wert[k]+(K[k].px?'px':''));
+document.body.classList.toggle('nr-aus',wert.nummern=='aus');
+document.body.classList.toggle('kacheln',wert.hintergrund=='kacheln');
+
+const raster=document.getElementById('raster');
+raster.innerHTML=ord.filter(x=>!weg.has(x)).map(x=>{
+ const n=String(x).padStart(2,'0');
+ return `<a class="k" href="18-09-2026/${n}.webp" target="_blank" rel="noopener"><img src="18-09-2026/${n}.webp" width="1600" height="1200" loading="lazy" decoding="async" alt="Bild ${n}"><b>${n}</b></a>`;
+}).join('');
+if(fehler.length){const f=document.getElementById('fehler');f.hidden=false;f.textContent='Steuerung – nicht ausgeführt:\n'+fehler.join('\n')}
+})();
+</script>
+</body>
+</html>
