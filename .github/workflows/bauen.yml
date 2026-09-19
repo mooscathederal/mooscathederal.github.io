@@ -1,7 +1,7 @@
 name: Website bauen und veröffentlichen
 
 # Läuft bei jedem Push auf main und auf Knopfdruck (Reiter Actions -> "Run workflow").
-# Ablauf: Namensschutz -> Blog aus quellen/blog_beitraege bauen -> Seite prüfen -> veröffentlichen.
+# Ablauf: Namensschutz -> Seite zusammenstellen -> Seite prüfen -> veröffentlichen.
 # Schlägt ein Schritt fehl, geht nichts online: die bisherige Seite bleibt stehen, GitHub schickt eine Mail.
 #
 # Einmalig im Repo einzustellen (Settings):
@@ -11,7 +11,7 @@ name: Website bauen und veröffentlichen
 #
 # Warum nicht "bauen und zurückcommitten": Commits, die ein Workflow mit dem Standard-Token pusht,
 # lösen keinen Pages-Bau aus (GitHub-Doku, "Configuring a publishing source"). Deshalb wird die fertige
-# Seite direkt veröffentlicht; quellen/ und werkzeug/ gehören nicht zur veröffentlichten Seite.
+# Seite direkt veröffentlicht. Der Blog wird lokal gebaut (Webseite/Werkzeuge/baue_blog.py) und als fertige Seiten hochgeladen.
 
 on:
   push:
@@ -55,24 +55,16 @@ jobs:
           fi
           echo "Namensschutz: sauber."
 
-      - name: Blog bauen
-        # Ohne Fremdpakete, wie in der lokalen Vorschau; BLOG_BORDMITTEL=1 schließt Zufallsfunde auf dem Runner aus.
-        env:
-          BLOG_BORDMITTEL: '1'
-        run: |
-          python3 --version
-          python3 werkzeug/baue_blog.py
-
       - name: Seite zusammenstellen
         run: |
           mkdir _site
           tar -cf - \
             --exclude='./.git' --exclude='./.github' --exclude='./_site' \
-            --exclude='./quellen' --exclude='./werkzeug' --exclude='./.gitignore' \
+            --exclude='./.gitignore' \
             --exclude='.DS_Store' . | tar -xf - -C _site
 
       - name: Seite prüfen
-        run: python3 werkzeug/pruefe_seite.py _site
+        run: python3 .github/pruefe_seite.py _site
 
       - uses: actions/upload-pages-artifact@v5
         with:
