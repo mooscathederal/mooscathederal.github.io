@@ -17,8 +17,8 @@
 # Nummern: 7 oder 07 | Bereich 5-9 | mehrere mit Leerzeichen: 7 3 5-9
 
 #A ═══ KENNGRÖSSEN ═══  (Format: name wert)  Standard gilt, wenn Zeile fehlt
-spalten-pc      5        # Zahl 4–6      Bilder pro Reihe ab 700 px Breite (Rechner, Tablet quer)
-spalten-handy   2        # Zahl 2–3      Bilder pro Reihe darunter
+spalten-pc      5        # Zahl 4–6      Bilder pro Reihe ab 800 px Breite (Rechner, Tablet quer)
+spalten-handy   2        # Zahl 2–3      Bilder pro Reihe darunter (Handy, Tablet hochkant)
 abstand         mittel   # eng | mittel | weit          Lücke zwischen Bildern (6 | 12 | 22 px)
 rand            mittel   # schmal | mittel | breit      Seitenrand (8 | 20 | 40 px)
 rundung         klein    # keine | klein | mittel | gross   Ecken (0 | 4 | 10 | 20 px)
@@ -35,6 +35,8 @@ hintergrund     fuellend # fuellend | kacheln           Papierbild füllt Fenste
 # nach    12 : 03      # 03 direkt hinter Bild 12 setzen
 # tausche 03 04        # zwei Bilder tauschen
 # weg     09 10-11     # ausblenden (Datei bleibt erhalten)
+
+weg 41-44   # die vier Bilder der unvollständigen letzten Reihe ausblenden (Zeile löschen = wieder alle 44)
 </script>
 
 <!-- #C STIL -->
@@ -46,7 +48,7 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;background:url(hinterg
 body.kacheln::before{background-size:auto;background-position:0 0;background-repeat:repeat}
 main{max-width:var(--max);margin:0 auto;padding:var(--rn)}
 #raster{display:grid;gap:var(--ab);grid-template-columns:repeat(var(--hd),minmax(0,1fr))}
-@media(min-width:700px){#raster{grid-template-columns:repeat(var(--pc),minmax(0,1fr))}}
+@media(min-width:800px){#raster{grid-template-columns:repeat(var(--pc),minmax(0,1fr))}}
 .k{position:relative;display:block;aspect-ratio:var(--ratio);border-radius:var(--rd);overflow:hidden;background:#ddd;box-shadow:0 1px 4px #0003}
 .k img{display:block;width:100%;height:100%;object-fit:cover}
 .k b{position:absolute;left:6px;bottom:6px;padding:1px 6px;border-radius:9px;background:#000a;color:#fff;font-weight:500}
@@ -101,7 +103,7 @@ function setze(s,dz){
  const r=ohne(L); r.splice(r.indexOf(T[0])+dz,0,...L); ord=r;
 }
 
-document.getElementById('steuerung').textContent.split('\n').forEach((zeile,n)=>{
+document.getElementById('steuerung').textContent.split('\n').forEach(zeile=>{
  const t=zeile.replace(/#.*/,'').trim(); if(!t) return;
  const i=t.search(/\s/), name=i<0?t:t.slice(0,i), rest=i<0?'':t.slice(i).trim();
  try{
@@ -111,7 +113,7 @@ document.getElementById('steuerung').textContent.split('\n').forEach((zeile,n)=>
    else{ if(!(rest in k.w)) throw `erlaubt: ${Object.keys(k.w).join(' | ')}`; wert[name]=rest}
   } else if(C[name]) C[name](rest);
   else throw 'unbekanntes Wort';
- }catch(e){fehler.push(`Zeile ${n+1} (${name}): ${e}`)}
+ }catch(e){fehler.push(`„${t}“ → ${e}`)}
 });
 
 const root=document.documentElement.style;
