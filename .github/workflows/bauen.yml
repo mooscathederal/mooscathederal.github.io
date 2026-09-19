@@ -1,7 +1,7 @@
 name: Website bauen und veröffentlichen
 
 # Läuft bei jedem Push auf main und auf Knopfdruck (Reiter Actions -> "Run workflow").
-# Ablauf: Namensschutz -> Blog aus quellen/beitraege bauen -> Seite prüfen -> veröffentlichen.
+# Ablauf: Namensschutz -> Blog aus quellen/blog_beitraege bauen -> Seite prüfen -> veröffentlichen.
 # Schlägt ein Schritt fehl, geht nichts online: die bisherige Seite bleibt stehen, GitHub schickt eine Mail.
 #
 # Einmalig im Repo einzustellen (Settings):

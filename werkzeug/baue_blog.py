@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Baut aus den Beitragsdateien die Blogseiten der Website.
 
-Quelle:  quellen/beitraege/*.md   (Kopf: titel, untertitel, datum, kennung, bild)
+Quelle:  quellen/blog_beitraege/*.md   (Kopf: titel, untertitel, datum, kennung, bild)
          quellen/bilder/*         (Bilder, beliebige Groesse)
 Ziel:    inhalte/blog.html                 (Auswahlseite mit waagerechtem Muehlrad)
          inhalte/blog/<kennung>.html       (je Beitrag eine eigene Seite)
@@ -137,7 +137,7 @@ def _markdown(text):
     return "\n".join(aus)
 
 BASIS = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))   # Wurzel des Repos
-QUELLE = os.path.join(BASIS, "quellen", "beitraege")
+QUELLE = os.path.join(BASIS, "quellen", "blog_beitraege")
 BILDER_QUELLE = os.path.join(BASIS, "quellen", "bilder")
 WEB = os.path.join(BASIS, "inhalte")
 ZIEL = os.path.join(WEB, "blog")
