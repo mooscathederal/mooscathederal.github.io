@@ -182,7 +182,10 @@ body.auswahl .waehler {
   mask-image: linear-gradient(to right, transparent 0, #000 12%, #000 88%, transparent 100%);
 }
 .stapel-fenster.quer .stapel { padding: 0; }
-.stapel-fenster.quer .stapel.bereit .kachel { width: clamp(11rem, 26vw, 16rem); }
+.stapel-fenster.quer .stapel.bereit .kachel { width: clamp(12rem, 22vw, 14rem); }   /* etwas größer als in der Leiste (11rem) */
+/* Rückfall ohne Skript: waagerecht scrollbare Reihe statt riesiger Felder */
+.stapel-fenster.quer .stapel:not(.bereit) { flex-direction: row; gap: 1rem; padding: 1rem; overflow-x: auto; overflow-y: hidden; height: 100%; align-items: center; }
+.stapel-fenster.quer .stapel:not(.bereit) .kachel { flex: none; width: 12rem; }
 body.auswahl .stapel-name { min-height: 3.6rem; padding-top: 1.2rem; }
 body.auswahl .stapel-name .n-titel { font-size: 1.15rem; }
 /* Hinweis und Rückweg unten am Rand, damit das Rad die Mitte behält */

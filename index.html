@@ -6,9 +6,9 @@
 <title>FishdontFly</title>
 <meta name="description" content="Fische fliegen nicht.">
 <meta name="theme-color" content="#2b3324">
-<link rel="preload" href="fische/hintergrund.webp" as="image" type="image/webp">
-<link rel="modulepreload" href="fische/koi.js">
-<link rel="stylesheet" href="start.css">
+<link rel="preload" href="animation/hintergrund.webp" as="image" type="image/webp">
+<link rel="modulepreload" href="animation/koi.js">
+<link rel="stylesheet" href="inhalte/css/start.css">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="FishdontFly">
 <meta property="og:url" content="https://www.fishdontfly.site/">
@@ -38,7 +38,7 @@
     <nav>
       <ul class="ordnerreihe">
         <!-- Neue Seite: weiteren <li> mit Link und Beschriftung anlegen. -->
-        <li><a class="ordner" href="blog.html"><svg viewBox="0 0 120 92" aria-hidden="true"><use href="#ordner"/></svg><span>Blog</span></a></li>
+        <li><a class="ordner" href="inhalte/blog.html"><svg viewBox="0 0 120 92" aria-hidden="true"><use href="#ordner"/></svg><span>Blog</span></a></li>
       </ul>
     </nav>
   </section>
@@ -52,7 +52,7 @@
 </svg>
 
 <script type="module">
-import { startKoi } from "./fische/koi.js";
+import { startKoi } from "./animation/koi.js";
 const buehne = document.querySelector(".buehne"), canvas = document.getElementById("koi");
 const q = new URLSearchParams(location.search);
 startKoi(canvas, { seed: q.has("seed") ? +q.get("seed") : undefined, onLost: () => buehne.classList.remove("laeuft") })

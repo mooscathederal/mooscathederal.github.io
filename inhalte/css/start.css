@@ -26,7 +26,7 @@ body {
   position: fixed;
   inset: 0;
   pointer-events: none;
-  background: var(--grund) url("fische/hintergrund.webp") center / cover no-repeat;
+  background: var(--grund) url("../../animation/hintergrund.webp") center / cover no-repeat;
 }
 .buehne canvas {
   display: block;
