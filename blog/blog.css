@@ -61,8 +61,25 @@ body.leiste-offen .griff { transform: translateY(-50%) translateX(var(--leiste-b
   transition: transform 0.35s ease;
   display: flex;
   flex-direction: column;
+  touch-action: none;
 }
 body.leiste-offen .leiste { transform: translateX(0); }
+
+/* Fläche über dem restlichen Bildschirm: solange die Leiste offen ist, gehört
+   jede senkrechte Wischbewegung dem Rad, nicht der Seite dahinter. */
+.leiste-deckel {
+  position: fixed;
+  inset: 0;
+  z-index: 15;
+  display: none;
+  touch-action: none;
+  background: transparent;
+}
+body.leiste-offen .leiste-deckel { display: block; }
+html.leiste-offen, body.leiste-offen {
+  overflow: hidden;
+  overscroll-behavior: none;
+}
 
 .stapel-fenster {
   position: relative;
@@ -87,6 +104,10 @@ body.leiste-offen .leiste { transform: translateX(0); }
   transition: transform 0.35s ease, filter 0.35s ease, opacity 0.35s ease;
   opacity: var(--o, 1);
 }
+/* Beim Ziehen keine Verzögerung: der Stapel klebt am Finger. Beim Einrasten
+   nach dem Loslassen ein kurzer, weicher Übergang. */
+.stapel.zieht .kachel { transition: none; }
+.stapel.rastet .kachel { transition: transform 0.2s ease, filter 0.2s ease, opacity 0.2s ease; }
 .kachel { width: 100%; }
 .stapel.bereit .kachel { width: var(--kachel-breite); }
 .kachel a { display: block; text-decoration: none; color: inherit; }
@@ -161,49 +182,47 @@ body.leiste-offen .leiste { transform: translateX(0); }
 }
 
 
-/* ---------- Auswahlseite: waagerechtes Mühlrad in der Bildmitte ---------- */
+/* ---------- Auswahlseite: Kachelfeld ---------- */
 body.auswahl .waehler {
   min-height: 100vh;
   min-height: 100svh;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 0.2rem;
-  padding: 2rem 0 calc(1.5rem + env(safe-area-inset-bottom));
+  padding: clamp(2rem, 6vh, 4rem) 1.25rem calc(3rem + env(safe-area-inset-bottom));
 }
-.stapel-fenster.quer {
-  position: relative;
-  flex: none;                     /* nicht dehnen: die Höhe steht fest */
+.feld {
+  list-style: none;
+  margin: 0 0 2.5rem;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
+  gap: 1.25rem;
   width: 100%;
-  height: clamp(13rem, 34vh, 20rem);
-  overflow: hidden;
-  -webkit-mask-image: linear-gradient(to right, transparent 0, #000 12%, #000 88%, transparent 100%);
-  mask-image: linear-gradient(to right, transparent 0, #000 12%, #000 88%, transparent 100%);
+  max-width: 64rem;
 }
-.stapel-fenster.quer .stapel { padding: 0; }
-.stapel-fenster.quer .stapel.bereit .kachel { width: clamp(12rem, 22vw, 14rem); }   /* etwas größer als in der Leiste (11rem) */
-/* Rückfall ohne Skript: waagerecht scrollbare Reihe statt riesiger Felder */
-.stapel-fenster.quer .stapel:not(.bereit) { flex-direction: row; gap: 1rem; padding: 1rem; overflow-x: auto; overflow-y: hidden; height: 100%; align-items: center; }
-.stapel-fenster.quer .stapel:not(.bereit) .kachel { flex: none; width: 12rem; }
-body.auswahl .stapel-name { min-height: 3.6rem; padding-top: 1.2rem; }
-body.auswahl .stapel-name .n-titel { font-size: 1.15rem; }
-/* Hinweis und Rückweg unten am Rand, damit das Rad die Mitte behält */
-body.auswahl .wink {
-  position: fixed;
-  left: 50%; transform: translateX(-50%);
-  bottom: calc(3.2rem + env(safe-area-inset-bottom));
-  margin: 0; font-size: 0.82rem; color: var(--leise); opacity: 0.7; text-align: center;
-  padding: 0 1.5rem; max-width: 34rem;
+.feld .kachel { container-type: inline-size; width: auto; }
+.feld .kachel a { display: block; }
+.feld .kachel img, .feld .kachel .ohne-bild {
+  aspect-ratio: var(--kachel-verhaeltnis);
+  border-radius: 8px;
+  border: 1.5px solid var(--kontur);
+  background: var(--ordner);
+  box-shadow: 0 2px 8px rgba(60, 45, 35, 0.16);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
+.feld .kachel .ohne-bild { padding: 0.6rem; }
+.feld .kachel .ohne-bild span { color: var(--kontur); opacity: 1; font-size: clamp(0.85rem, 8.5cqi, 1.2rem); line-height: 1.25; hyphens: auto; overflow-wrap: anywhere; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.feld .kachel a:hover img, .feld .kachel a:focus-visible img,
+.feld .kachel a:hover .ohne-bild, .feld .kachel a:focus-visible .ohne-bild {
+  border-color: var(--tinte);
+  box-shadow: 0 3px 12px rgba(60, 45, 35, 0.26);
+}
+.feld .kachel a:focus-visible { outline: none; }
+.feld .kachel-titel, .feld .kachel-datum { display: none; }
 body.auswahl .zurueck {
-  position: fixed;
-  left: 50%; transform: translateX(-50%);
-  bottom: calc(0.9rem + env(safe-area-inset-bottom));
-  border: 0; padding: 0.3rem 0.6rem;
-}
-@media (max-width: 30rem) {
-  body.auswahl .wink { font-size: 0.76rem; }
+  border-top: 0;
+  padding: 0;
 }
 
 /* ---------- Formeln (beim Bauen aus LaTeX erzeugt, ohne fremde Skripte) ---------- */
