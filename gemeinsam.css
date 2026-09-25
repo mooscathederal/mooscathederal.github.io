@@ -1,0 +1,452 @@
+/* FishdontFly – ein Stylesheet für alle Ebenen (Entwurf 2).
+   Ein Raum: der Wald liegt immer dahinter, die Fische ziehen darunter weiter.
+   Tiefere Ebenen legen einen Schleier darüber (unscharf, dunkler) statt auf helles Papier zu wechseln. */
+:root {
+  color-scheme: dark;
+  --wald: #141b12;
+  --wald-hell: #2b3324;
+  --schrift-farbe: #e8e7dd;
+  --leise: #a6ad9d;
+  --linie: rgba(232, 231, 221, .16);
+  --flaeche: rgba(232, 231, 221, .055);
+  --flaeche-hover: rgba(232, 231, 221, .1);
+  --koi: #e58063;            /* nur für Markierungen */
+  --schrift: "Newsreader", "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  --spalte: 34rem;
+  --tief: 1;                 /* 0 = Startebene, 1 = volle Tiefe; die Startseite setzt den Wert beim Hochwischen */
+}
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; background: var(--wald); }
+body {
+  margin: 0;
+  font-family: var(--schrift);
+  font-size: 1.0625rem;
+  line-height: 1.6;
+  color: var(--schrift-farbe);
+  background: var(--wald);
+  font-optical-sizing: auto;
+}
+a { color: inherit; }
+img { max-width: 100%; display: block; }
+:focus-visible { outline: 2px solid var(--koi); outline-offset: 3px; border-radius: 2px; }
+
+/* ---------- Der Raum: Wald, Fische, Schleier ---------- */
+.wald {
+  position: fixed; left: 0; top: 0; width: 100%; height: 100vh; height: 100lvh;
+  background: var(--wald-hell) url("animation/hintergrund.webp") center / cover no-repeat;
+  z-index: 0; pointer-events: none;
+}
+#koi {
+  position: fixed; left: 0; top: 0; width: 100%; height: 100vh; height: 100lvh;
+  z-index: 1; pointer-events: none; opacity: 0; transition: opacity .9s ease;
+}
+#koi.laeuft { opacity: 1; }
+.schleier {
+  position: fixed; inset: 0; z-index: 2; pointer-events: none;
+  background: rgba(14, 20, 12, calc(.72 * var(--tief)));
+  -webkit-backdrop-filter: blur(calc(9px * var(--tief))) saturate(calc(1 - .25 * var(--tief)));
+  backdrop-filter: blur(calc(9px * var(--tief))) saturate(calc(1 - .25 * var(--tief)));
+}
+.ebene { position: relative; z-index: 3; }
+/* Ankommen auf einer tieferen Ebene: der Schleier legt sich kurz nach, damit es sich wie Sinken anfühlt */
+@keyframes sinken { from { opacity: .35; } to { opacity: 1; } }
+.unterseite .schleier { animation: sinken .7s ease both; }
+
+.kapitaelchen {
+  font-size: .72rem;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  font-weight: 500;
+  color: var(--leise);
+}
+.ziffern { font-variant-numeric: tabular-nums lining-nums; }
+
+/* ---------- Kopfzeile ---------- */
+.kopf {
+  display: flex; align-items: baseline; gap: .9rem;
+  padding: 1.1rem clamp(1rem, 4vw, 2.5rem) 0;
+  max-width: 72rem; margin: 0 auto;
+}
+.kopf a { text-decoration: none; }
+.kopf .marke { font-style: italic; font-weight: 500; font-size: 1.05rem; }
+.kopf .marke:hover { color: var(--koi); }
+.kopf .pfad::before { content: "/"; margin-right: .9rem; color: var(--linie); }
+
+.seite { max-width: 72rem; margin: 0 auto; padding: 0 clamp(1rem, 4vw, 2.5rem) 5rem; }
+.seitentitel {
+  font-weight: 400; font-style: italic;
+  font-size: clamp(2.4rem, 6vw, 3.6rem); line-height: 1.05; letter-spacing: -.01em;
+  margin: clamp(2rem, 7vh, 4rem) 0 .4rem; text-wrap: balance;
+}
+.seitentitel + .kapitaelchen { display: block; margin-bottom: 2rem; }
+
+.fuss {
+  max-width: 72rem; margin: 0 auto;
+  padding: 2rem clamp(1rem, 4vw, 2.5rem) calc(2.5rem + env(safe-area-inset-bottom, 0px));
+  display: flex; flex-wrap: wrap; gap: .5rem 1.5rem;
+  border-top: 1px solid var(--linie); color: var(--leise); font-size: .92rem;
+}
+.fuss a { text-decoration: none; }
+.fuss a:hover { color: var(--schrift-farbe); text-decoration: underline; text-underline-offset: 3px; }
+
+/* ---------- Band ---------- */
+.band-rahmen { position: relative; margin: 0 calc(-1 * clamp(1rem, 4vw, 2.5rem)); }
+.band {
+  --karte: clamp(15rem, 62vw, 19rem);
+  display: flex; gap: 1.25rem; overflow-x: auto; scroll-snap-type: x mandatory;
+  padding: 1.5rem calc(50% - var(--karte) / 2) 2.2rem;
+  scrollbar-width: none; overscroll-behavior-x: contain; list-style: none; margin: 0;
+}
+.band::-webkit-scrollbar { display: none; }
+.band li { flex: 0 0 var(--karte); scroll-snap-align: center; }
+.karte {
+  --n: 0;
+  display: flex; flex-direction: column; gap: .6rem;
+  aspect-ratio: 3 / 4; max-width: 100%;
+  padding: 1.4rem 1.35rem 1.2rem;
+  background: var(--flaeche);
+  border: 1px solid var(--linie);
+  border-radius: 4px;
+  text-decoration: none;
+  transform: scale(calc(1 - .07 * var(--n))) translateY(calc(10px * var(--n)));
+  opacity: calc(1 - .5 * var(--n));
+  overflow: hidden;
+  transition: background .2s ease;
+}
+.karte:hover { background: var(--flaeche-hover); }
+.karte .kapitaelchen { flex: none; }
+.karte h3 { margin: 0; font-weight: 400; font-style: italic; font-size: 1.55rem; line-height: 1.12; text-wrap: balance; }
+.karte .unter { margin: 0; color: var(--leise); font-size: .9rem; line-height: 1.35; }
+.karte .erster {
+  margin: auto 0 0; padding-top: .8rem; border-top: 1px solid var(--linie);
+  font-size: .98rem; line-height: 1.45;
+  display: -webkit-box; -webkit-line-clamp: 5; -webkit-box-orient: vertical; overflow: hidden;
+}
+.karte:hover h3 { color: var(--koi); }
+
+.band-steuer { display: flex; align-items: center; justify-content: center; gap: 1.25rem; margin-top: -.6rem; }
+.band-steuer button {
+  font: inherit; font-size: 1.3rem; line-height: 1;
+  width: 2.6rem; height: 2.6rem; border-radius: 50%;
+  border: 1px solid var(--linie); background: var(--flaeche); color: var(--schrift-farbe); cursor: pointer;
+}
+.band-steuer button:hover { border-color: var(--schrift-farbe); }
+.band-steuer .stand { min-width: 6.5rem; text-align: center; color: var(--leise); font-size: .95rem; }
+
+/* ---------- Verzeichnis ---------- */
+.verzeichnis { margin-top: 3.5rem; display: grid; gap: 2.5rem; }
+.monat h2 { margin: 0 0 .6rem; }
+.monat ol { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--linie); }
+.monat li { border-bottom: 1px solid var(--linie); }
+.monat a {
+  position: relative; display: grid; grid-template-columns: 2.6rem minmax(0, 1fr); gap: .1rem 1rem;
+  padding: .75rem 3.4rem .75rem 0; text-decoration: none;
+}
+.monat .tag { grid-row: span 2; color: var(--leise); padding-top: .15rem; }
+.monat .titel { font-size: 1.2rem; line-height: 1.3; }
+.monat .unter { color: var(--leise); font-size: .95rem; line-height: 1.4; }
+.monat a:hover .titel { color: var(--koi); }
+@media (min-width: 52rem) {
+  .monat a { grid-template-columns: 3rem minmax(0, 1.1fr) minmax(0, 1fr); align-items: baseline; }
+  .monat .tag { grid-row: auto; }
+}
+.hinweis-import { color: var(--leise); font-size: .92rem; font-style: italic; margin: .6rem 0 0; }
+
+/* ---------- Ein Text ---------- */
+.text { max-width: var(--spalte); margin: 0 auto; padding: 0 0 2rem; }
+.text header { margin: clamp(2.5rem, 9vh, 5rem) 0 2.5rem; }
+.text h1 { font-weight: 400; font-style: italic; font-size: clamp(2.1rem, 5.5vw, 3rem); line-height: 1.08; letter-spacing: -.01em; margin: .5rem 0 .6rem; text-wrap: balance; }
+.text .untertitel { margin: 0; color: var(--leise); font-size: 1.15rem; line-height: 1.4; }
+.text .koerper { font-size: 1.18rem; line-height: 1.7; hyphens: auto; }
+.text .koerper p { margin: 0 0 1.1em; }
+.text .koerper h2 { font-size: 1.3rem; font-weight: 500; margin: 2.2em 0 .6em; }
+.text .koerper blockquote { margin: 1.5em 0; padding-left: 1.1em; border-left: 2px solid var(--linie); color: var(--leise); font-style: italic; }
+.text .koerper hr { border: 0; margin: 2.5em auto; width: 3rem; border-top: 1px solid var(--leise); }
+.text .koerper a { text-decoration-color: var(--koi); text-underline-offset: 3px; }
+.text .koerper .formel { font-style: italic; text-align: center; margin: 1.5rem 0; }
+.text .koerper span.formel { display: inline; margin: 0; }
+.text .koerper .formel sub, .text .koerper .formel sup { font-size: .7em; font-style: normal; }
+.text .koerper .formel .wort { font-style: normal; }
+.text .koerper .formel .luecke { display: inline-block; width: 1.1em; }
+.text .koerper .formel .luecke.klein { width: .35em; }
+
+.weiter { max-width: var(--spalte); margin: 3rem auto 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); gap: 1rem; }
+.weiter a { display: grid; gap: .35rem; align-content: start; padding: 1.1rem 1.2rem; background: var(--flaeche); border: 1px solid var(--linie); border-radius: 4px; text-decoration: none; }
+.weiter .titel { font-style: italic; font-size: 1.25rem; line-height: 1.2; }
+.weiter .erster { color: var(--leise); font-size: .95rem; line-height: 1.4; }
+.weiter a:hover { background: var(--flaeche-hover); }
+.weiter a:hover .titel { color: var(--koi); }
+
+/* ---------- Zeichnungen: Tusche wird hell auf dunkel (Original im Leuchttisch umschaltbar) ---------- */
+.raster {
+  list-style: none; margin: 0; padding: 0; display: grid; gap: clamp(.5rem, 1.2vw, .9rem);
+  grid-template-columns: repeat(auto-fill, minmax(min(calc(50% - .5rem), 13rem), 1fr));
+}
+.raster button {
+  display: block; width: 100%; padding: 0; border: 1px solid var(--linie); cursor: zoom-in;
+  background: transparent; border-radius: 3px; overflow: hidden;
+  transition: transform .2s ease, border-color .2s ease;
+}
+.raster button:hover { transform: translateY(-2px); border-color: var(--leise); }
+.raster img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; filter: invert(1); mix-blend-mode: screen; opacity: .88; }
+
+.leuchttisch {
+  position: fixed; inset: 0; z-index: 50;
+  background: rgba(10, 14, 9, .94); color: var(--schrift-farbe);
+  display: grid; grid-template-rows: auto 1fr auto;
+  padding: calc(.8rem + env(safe-area-inset-top, 0px)) 1rem calc(1rem + env(safe-area-inset-bottom, 0px));
+  touch-action: pan-y;
+}
+.leuchttisch[hidden] { display: none; }
+.leuchttisch .oben, .leuchttisch .unten { display: flex; align-items: center; justify-content: space-between; gap: 1rem; max-width: 72rem; width: 100%; margin: 0 auto; flex-wrap: wrap; }
+.leuchttisch figure { margin: 0; display: grid; place-items: center; min-height: 0; }
+.leuchttisch img { max-width: min(100%, 96rem); max-height: 100%; object-fit: contain; filter: invert(1); mix-blend-mode: screen; }
+.leuchttisch.original img { filter: none; mix-blend-mode: normal; }
+.leuchttisch button { font: inherit; color: var(--schrift-farbe); background: transparent; border: 1px solid var(--linie); border-radius: 999px; padding: .45rem 1rem; cursor: pointer; }
+.leuchttisch button:hover { border-color: var(--schrift-farbe); }
+.leuchttisch button[aria-pressed="true"] { background: var(--schrift-farbe); color: var(--wald); }
+.leuchttisch .zahl { color: var(--leise); }
+
+/* ---------- Chiffre ---------- */
+.chiffre { display: block; color: var(--schrift-farbe); overflow: visible; }
+.karte .chiffre { flex: none; width: 100%; height: 5.4rem; margin: .2rem 0 .1rem; opacity: .9; }
+.karte:hover .chiffre { color: var(--koi); }
+.monat .chiffre { position: absolute; right: 0; top: 50%; width: 2.6rem; height: 2.6rem; transform: translateY(-50%); opacity: .7; }
+.monat a:hover .chiffre { color: var(--koi); opacity: 1; }
+.text header .chiffre { width: 6.5rem; height: 6.5rem; margin: 0 0 1.4rem -.4rem; }
+
+@media (prefers-reduced-motion: reduce) {
+  .karte, .raster button, #koi { transition: none; }
+  .unterseite .schleier { animation: none; }
+}
+
+/* =========================================================================
+   Holzschnitt (Entwurf 3): klassisch, unaufgeregt. Außen IM Fell, innen die Leseschrift.
+   Zweifarbdruck: Papier auf Druckschwarz, Rot nur als zweite Farbe.
+   ========================================================================= */
+:root {
+  --aussen: "IM Fell English", "Iowan Old Style", Georgia, serif;
+  --aussen-sc: "IM Fell English SC", "IM Fell English", Georgia, serif;
+  --schrift-farbe: #ece5d3;
+  --leise: #b3aa94;
+  --linie: rgba(236, 229, 211, .38);
+  --flaeche: transparent;
+  --flaeche-hover: rgba(236, 229, 211, .05);
+  --koi: #c9573c;
+}
+.schleier { background: rgba(17, 16, 12, calc(.8 * var(--tief))); }
+.kapitaelchen { font-family: var(--aussen-sc); text-transform: lowercase; letter-spacing: .05em; font-size: .98rem; font-weight: 400; }
+.kopf .marke { font-family: var(--aussen); font-weight: 400; font-size: 1.15rem; }
+.kopf .pfad { font-family: var(--aussen); font-size: 1.15rem; }
+.seitentitel { font-family: var(--aussen); font-style: normal; font-weight: 400; font-size: clamp(2.2rem, 5vw, 3rem); letter-spacing: 0; }
+.seitentitel::after { content: ""; display: block; width: 7rem; height: 0; margin-top: .9rem; border-top: 2px solid var(--linie); filter: url(#holz); }
+.fuss { font-family: var(--aussen); font-size: 1.02rem; border-top: 0; position: relative; }
+.fuss::before { content: ""; position: absolute; left: clamp(1rem, 4vw, 2.5rem); right: clamp(1rem, 4vw, 2.5rem); top: 0; border-top: 1.5px solid var(--linie); filter: url(#holz); }
+
+.karte { position: relative; background: none; border: 0; border-radius: 0; }
+.karte::before { content: ""; position: absolute; inset: 0; border: 1.5px solid var(--linie); filter: url(#holz); pointer-events: none; }
+.karte h3 { font-family: var(--aussen); font-size: 1.6rem; line-height: 1.15; }
+.karte .erster { border-top-color: rgba(236, 229, 211, .2); }
+.band-steuer button { border-radius: 0; font-family: var(--aussen); background: none; }
+
+.monat .titel { font-family: var(--aussen); font-size: 1.25rem; }
+.text h1 { font-family: var(--aussen); font-style: normal; }
+.text .ueberarbeitet { margin-top: 2.5em; color: var(--leise); font-size: .92rem; font-style: italic; }
+
+.weiter a { position: relative; background: none; border: 0; border-radius: 0; }
+.weiter a::before { content: ""; position: absolute; inset: 0; border: 1.5px solid var(--linie); filter: url(#holz); pointer-events: none; }
+.weiter .titel { font-family: var(--aussen); font-style: normal; }
+
+.raster button { border-radius: 0; }
+.leuchttisch button { border-radius: 0; font-family: var(--aussen); }
+.band { align-items: stretch; }
+.band li { display: flex; }
+.karte { aspect-ratio: auto; width: 100%; min-height: 15rem; }
+.karte .erster { margin-top: .5rem; }
+
+/* ---------- Schriften: Inhaltsverzeichnis ---------- */
+.ziffern { font-family: var(--schrift); font-variant-numeric: lining-nums tabular-nums; text-transform: none; letter-spacing: 0; }
+.verzeichnis-seite { max-width: 40rem; }
+.iv-kopf { text-align: center; }
+.iv-kopf .seitentitel::after { margin-left: auto; margin-right: auto; }
+.inhalt { margin-top: 2.5rem; }
+.iv-monat h2 { text-align: center; margin: 0 0 1.2rem; font-size: 1.05rem; }
+.iv-monat h2 .ziffern { font-size: .92em; }
+.iv-monat ol { list-style: none; margin: 0; padding: 0; }
+.iv-monat li + li { margin-top: .9rem; }
+.iv-monat a { display: block; text-decoration: none; }
+.iv-zeile { display: flex; align-items: baseline; gap: .5rem; }
+.iv-titel { font-family: var(--aussen); font-size: 1.28rem; line-height: 1.25; }
+.iv-punkte { flex: 1; min-width: 1.5rem; border-bottom: 1.5px dotted var(--linie); transform: translateY(-.3em); }
+.iv-tag { color: var(--leise); font-size: .95rem; }
+.iv-unter { display: block; color: var(--leise); font-style: italic; font-size: .98rem; line-height: 1.4; margin-top: .1rem; }
+.iv-monat a:hover .iv-titel { color: var(--koi); }
+.iv-fleuron { text-align: center; color: var(--leise); font-size: 1.4rem; margin: 2.2rem 0; }
+
+/* ---------- Schriften: schlicht ---------- */
+.liste-seite { max-width: 44rem; margin-left: 0; margin-right: auto; padding-left: clamp(1rem, 8vw, 6rem); }
+.ls-titel { font-family: var(--aussen); font-weight: 400; font-size: 1.5rem; margin: 3rem 0 1.5rem; }
+.liste { list-style: none; margin: 0; padding: 0; }
+.liste li { display: flex; gap: 1.25rem; padding: .22rem 0; font-size: 1.05rem; }
+.ls-tag { color: var(--leise); flex: none; width: 6.2rem; }
+.liste a { text-decoration: none; }
+.liste a:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+/* ---------- Ein Zeilenabstand für alles ---------- */
+:root { --zeile: 1.65; --zeile-titel: 1.2; }
+body, p, li, a, span, .koerper, .untertitel, .unter, .erster, .fuss, .kopf,
+.text .koerper, .text .untertitel, .iv-unter, .monat .unter, .weiter .erster { line-height: var(--zeile); }
+h1, h2, h3, .seitentitel, .ls-titel, .text h1, .karte h3, .weiter .titel, .iv-titel, .monat .titel { line-height: var(--zeile-titel); }
+.liste li { padding: 0; }
+
+/* =========================================================================
+   Entwurf 4: Georgia außen (wie der ursprüngliche Blog), Leseschrift für den Text,
+   Calibri für Datum, Kopfzeile und Fußzeile. Kein Zierrat.
+   ========================================================================= */
+:root {
+  --aussen: Georgia, "Times New Roman", serif;
+  --aussen-sc: Georgia, "Times New Roman", serif;
+  --buero: Calibri, Carlito, "Segoe UI", Arial, sans-serif;
+}
+.seitentitel::after, .fuss::before, .karte::before, .weiter a::before { display: none; }
+.ziffern, .datum { font-family: var(--buero); font-variant-numeric: lining-nums tabular-nums; letter-spacing: 0; text-transform: none; }
+.kopf .marke { font-family: var(--buero); font-style: normal; font-weight: 700; font-size: 1.05rem; }
+.kopf .pfad { font-family: var(--buero); font-size: 1.05rem; }
+.fuss { font-family: var(--buero); font-size: .95rem; border-top: 1px solid var(--linie); }
+.seitentitel, .text h1, .ls-titel { font-family: var(--aussen); font-style: normal; font-weight: 400; }
+.kapitaelchen { font-family: var(--buero); text-transform: none; letter-spacing: 0; font-size: .95rem; }
+.text header .datum { color: var(--leise); font-size: .95rem; }
+.weiter a { border: 1px solid var(--linie); }
+.weiter .titel { font-family: var(--aussen); }
+
+.kachel-seite { max-width: 64rem; }
+.feld { list-style: none; margin: 0; padding: 0; display: grid; gap: 1rem; grid-template-columns: repeat(auto-fill, minmax(min(100%, 11rem), 1fr)); }
+.feld li { display: flex; }
+.kachel {
+  display: flex; flex-direction: column; justify-content: space-between; gap: .6rem; width: 100%;
+  aspect-ratio: 3 / 2; max-width: 100%; padding: .75rem .85rem;
+  border: 1px solid var(--linie); text-decoration: none;
+}
+.k-titel { font-family: var(--aussen); font-size: 1.02rem; line-height: 1.3; overflow-wrap: anywhere; hyphens: auto; }
+.k-datum { color: var(--leise); font-size: .85rem; }
+.kachel:hover { border-color: var(--schrift-farbe); }
+.kachel:hover .k-titel { color: var(--koi); }
+
+/* ---------- Kacheln: eckig, Titel mittig, Fläche durchlässig; Datum darunter ---------- */
+.feld li { display: flex; flex-direction: column; gap: .35rem; }
+.kachel { justify-content: center; align-items: center; text-align: center; background: rgba(236, 229, 211, .08); border-radius: 0; padding: .8rem; }
+.kachel:hover { background: rgba(236, 229, 211, .14); }
+.k-titel { text-align: center; }
+.k-datum { text-align: center; color: var(--leise); font-size: .85rem; }
+
+/* ---------- Kopf und Fuß wie eine Professorenseite von 2004 ---------- */
+.kopf a, .fuss a { text-decoration: underline; text-underline-offset: 2px; }
+.kopf .marke { text-decoration: none; }
+.fuss { display: block; }
+.fuss p { margin: 0; }
+.fuss-stand { margin-top: .4rem !important; color: var(--leise); font-size: .88rem; }
+
+/* =========================================================================
+   Entwurf 5: wie Obsidian (Standard-Dunkelthema). Leseschrift in den Texten bleibt.
+   ========================================================================= */
+:root {
+  --obs: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --aussen: var(--obs); --aussen-sc: var(--obs); --buero: var(--obs);
+  --schrift-farbe: #dadada;
+  --leise: #999999;
+  --linie: #363636;
+  --koi: #a88bfa;
+}
+.schleier { background: rgba(30, 30, 30, calc(.94 * var(--tief))); -webkit-backdrop-filter: blur(calc(10px * var(--tief))); backdrop-filter: blur(calc(10px * var(--tief))); }
+body { -webkit-font-smoothing: antialiased; }
+.kopf .marke { font-weight: 600; }
+.seitentitel, .ls-titel, .text h1 { font-family: var(--obs); font-weight: 700; letter-spacing: -.01em; }
+.ls-titel { font-size: 1.6rem; }
+.fuss a { text-decoration: none; color: var(--leise); }
+.fuss a:hover { color: var(--koi); }
+.feld { gap: .9rem; }
+.kachel { background: #262626; border: 1px solid #363636; border-radius: 4px; }
+.kachel:hover { background: #2a2a2a; border-color: #4a4a4a; }
+.k-titel { font-family: var(--obs); font-weight: 600; font-size: .95rem; color: #dadada; }
+.kachel:hover .k-titel { color: var(--koi); }
+.k-datum { font-size: .8rem; color: #8a8a8a; }
+.text .koerper a { color: var(--koi); text-decoration: none; }
+
+/* Kacheln im gedämpften Notizweiß aus Obsidian (hell), ohne modernen Zierrat */
+.kachel, .kachel:hover { background: #ececec; border: 0; border-radius: 0; }
+.k-titel, .kachel:hover .k-titel { font-weight: 400; color: #2b2b2b; font-size: .95rem; }
+.kachel:hover .k-titel { text-decoration: underline; text-underline-offset: 2px; }
+
+/* Kacheln wieder wie zuvor (Obsidian dunkel), aber durchlässiger */
+.kachel { background: rgba(38, 38, 38, .55); border: 1px solid #3a3a3a; border-radius: 4px; }
+.kachel:hover { background: rgba(48, 48, 48, .65); border-color: #4a4a4a; }
+.k-titel { font-weight: 600; color: #dadada; }
+.kachel:hover .k-titel { color: var(--koi); text-decoration: none; }
+
+/* eingerahmter Hinweis */
+.hinweis-rahmen { border: 1px solid var(--leise); padding: .9rem 1.1rem; margin: 0 0 1.6em; }
+.hinweis-rahmen p { margin: 0; }
+.hinweis-rahmen p + p { margin-top: .4em; }
+
+.kachel-seite .ls-titel { text-align: center; }
+
+/* =========================================================================
+   Entwurf 6: eine Schrift für alles (die Leseschrift). Zettel statt Raster.
+   ========================================================================= */
+:root { --obs: var(--schrift); --aussen: var(--schrift); --aussen-sc: var(--schrift); --buero: var(--schrift); }
+.seitentitel, .ls-titel, .text h1 { font-weight: 500; letter-spacing: 0; }
+.kopf .marke { font-weight: 600; }
+.kopf a, .kopf .pfad { text-decoration: none; }
+.kopf a:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+.stapel-feld { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 1.1rem; align-items: flex-start; }
+.stapel-feld li { flex-grow: 0; flex-shrink: 1; max-width: 100%; display: flex; flex-direction: column; gap: .35rem; }
+.zettel {
+  display: flex; flex-direction: column; gap: .45rem; padding: .8rem .9rem;
+  background: rgba(38, 38, 38, .55); border: 1px solid #3a3a3a; text-decoration: none;
+}
+.zettel:hover { background: rgba(48, 48, 48, .65); border-color: #4a4a4a; }
+.z-titel { font-size: 1.08rem; line-height: 1.3; color: var(--schrift-farbe); }
+.z-erster { font-size: .9rem; line-height: 1.45; color: var(--leise); display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.zettel:hover .z-titel { color: var(--koi); }
+.stapel-feld .k-datum { text-align: left; }
+
+.ausstellung-titel { text-align: center; }
+.folge { display: grid; gap: 0; margin: 1rem 0 4rem; }
+.blatt-folge { margin: 0; min-height: 88vh; min-height: 88svh; display: grid; place-content: center; justify-items: center; gap: .6rem; }
+.blatt-folge button { padding: 0; border: 0; background: none; cursor: zoom-in; }
+.blatt-folge img { max-height: 76vh; max-height: 76svh; width: auto; max-width: 100%; filter: invert(1); mix-blend-mode: screen; opacity: .9; }
+.blatt-folge figcaption { color: var(--leise); font-size: .9rem; }
+
+/* Schriften: nur die Titel, mittig */
+.titel-liste { list-style: none; margin: 1.5rem 0 0; padding: 0; text-align: center; }
+.titel-liste li + li { margin-top: 1.1rem; }
+.titel-liste a { font-size: 1.15rem; text-decoration: none; }
+.titel-liste a:hover { color: var(--koi); }
+
+/* Kacheln zurück: gleich groß, Titel mittig, in der Leseschrift */
+.k-titel { font-family: var(--schrift); font-weight: 500; font-size: 1.05rem; }
+
+/* ---------- Schriften als Papierstapel: Blätter je nach Seitenzahl, Farbaufdruck oben ---------- */
+.papier-feld { list-style: none; margin: 1rem 0 0; padding: 0; display: grid; gap: 2.6rem 1.8rem; grid-template-columns: repeat(auto-fill, minmax(min(100%, 9.5rem), 1fr)); }
+.papier-feld li { display: grid; justify-items: center; gap: .6rem; }
+.papier { position: relative; display: block; width: min(100%, 9rem); aspect-ratio: 1 / 1.3; text-decoration: none; }
+.blatt {
+  position: absolute; inset: 0; background: color-mix(in srgb, #ebe6dc, #000 var(--ton, 0%));
+  box-shadow: 0 1px 2px rgba(0,0,0,.35);
+  transform: translate(var(--dx, 0), var(--dy, 0)) rotate(var(--rot, 0deg));
+}
+.blatt.oben { display: flex; flex-direction: column; gap: .7rem; padding: 12% 11%; background: #efebe2; transition: transform .2s ease; }
+.aufdruck { display: block; width: var(--breite); height: var(--hoehe); background: var(--farbe); opacity: .88; filter: url(#holz); mix-blend-mode: multiply; }
+.b-titel { font-family: var(--schrift); font-size: .86rem; line-height: 1.3; color: #26231f; overflow-wrap: anywhere; hyphens: auto; }
+.papier:hover .blatt.oben { transform: translateY(-3px) rotate(var(--rot)); }
+.papier:focus-visible { outline-offset: 6px; }
+@media (prefers-reduced-motion: reduce) { .blatt.oben { transition: none; } }
+
+/* Am Textende: letztes / nächstes, ohne Rahmen, mittig, mindestens zwei Zeilen Abstand */
+.blaettern { max-width: var(--spalte); margin: 3.4em auto 0; display: flex; justify-content: center; gap: clamp(2rem, 8vw, 5rem); text-align: center; flex-wrap: wrap; }
+.blaettern a { display: grid; gap: .15rem; text-decoration: none; max-width: 15rem; }
+.w-titel { font-size: 1.08rem; }
+.w-lab { color: var(--leise); font-size: .88rem; }
+.blaettern a:hover .w-titel { color: var(--koi); }

@@ -1,3 +1,4 @@
+// ENTWURF-KOPIE (Claude, 25.09.2026): drei Änderungen, markiert mit "ENTWURF".
 // Fischi – Hintergrund der Startseite. Renderer und Schwarm aus fischi-lab/schwarm (Lauf 5) ohne Regler.
 // Assets und sim.js/warp.js erzeugt fischi-lab/baue_startseite.py; diese Datei wird dabei nicht überschrieben.
 import { buildGrid } from "./warp.js";
@@ -21,6 +22,7 @@ export async function startKoi(canvas, opts = {}) {
   const S = {}; for (const k in SWITCHES) S[k] = SWITCHES[k].v;
   const seed = opts.seed ?? Math.floor(Math.random() * 1e6);
   const MODE = "frei";
+  const info = { frames: 0, fish: 0, seed, running: false, lost: false, tint: opts.tint || [1, 1, 1], transparent: !!opts.transparent };
 
   // ---------- Schwarm ----------
   let swarm = []; let rng = null;
@@ -48,7 +50,7 @@ in vec2 aPos; in vec2 aTex; in float aLat; uniform vec2 uCanvas, uCenter, uOffse
 void main(){ vec2 d=(aPos-uCenter)*uScale; float c=cos(uRot), s=sin(uRot); vec2 p=uOffset+vec2(c*d.x-s*d.y, s*d.x+c*d.y);
  vec2 n=(p/uCanvas)*2.0-1.0; n.y=-n.y; gl_Position=vec4(n,0.,1.); vTex=aTex/uTexSize; vLat=aLat; }`));
   gl.attachShader(prog, sh(gl.FRAGMENT_SHADER, `#version 300 es
-precision highp float; in vec2 vTex; in float vLat; uniform sampler2D uTex, uBg; uniform int uMode; uniform vec4 uColor; uniform vec4 uBgRect; uniform vec2 uCanvas; uniform float uShMod, uVol, uContrast, uBright; out vec4 o;
+precision highp float; in vec2 vTex; in float vLat; uniform sampler2D uTex, uBg; uniform int uMode; uniform vec4 uColor; uniform vec4 uBgRect; uniform vec2 uCanvas; uniform float uShMod, uVol, uContrast, uBright; uniform vec3 uTint; out vec4 o;
 void main(){
   vec4 c=texture(uTex,vTex);
   if(uMode==3){
@@ -57,8 +59,8 @@ void main(){
     float f=mix(1.0, clamp(pow(lum,0.6)*1.8,0.0,1.4), uShMod);
     o=vec4(0.,0.,0.,c.a*uColor.a*f); return; }
   if(uMode==4){ vec3 r=(c.rgb-0.5)*uContrast+0.5+uBright; o=vec4(clamp(r,0.0,1.0),1.0); return; }
-  if(uMode==5){ float d=1.0-uVol*pow(abs(vLat),1.6); o=vec4(c.rgb*d,c.a); return; }
-  o=c; }`));
+  if(uMode==5){ float d=1.0-uVol*pow(abs(vLat),1.6); vec3 g=vec3(dot(c.rgb,vec3(0.3,0.59,0.11))); o=vec4(mix(g,c.rgb,uTint.x>0.999?1.0:0.86)*d*uTint,c.a); return; }
+  o=vec4(c.rgb*uTint,c.a); }`));
   gl.linkProgram(prog); gl.useProgram(prog);
   const UL = {}; const U = (n) => (n in UL ? UL[n] : (UL[n] = gl.getUniformLocation(prog, n)));
   const aPos = gl.getAttribLocation(prog, "aPos"), aTex = gl.getAttribLocation(prog, "aTex"), aLat = gl.getAttribLocation(prog, "aLat");
@@ -106,12 +108,14 @@ void main(){
       return;
     }
     setCommon(W, H, F.cx, F.cy, ox, oy, scale, rot, [F.w, F.h]);
+    const T = info.tint || [1, 1, 1]; gl.uniform3f(U("uTint"), T[0], T[1], T[2]);   // ENTWURF: Umgebungslicht
     gl.uniform1i(U("uMode"), S.V ? 5 : 0);
     gl.drawElements(gl.TRIANGLES, g.idx.length, gl.UNSIGNED_INT, 0);
   }
   function drawBackground(W, H) {
     const s = Math.max(W / bgImg.width, H / bgImg.height), w = bgImg.width * s, h = bgImg.height * s, x0 = (W - w) / 2, y0 = (H - h) / 2;
     bgRect[0] = x0; bgRect[1] = y0; bgRect[2] = w; bgRect[3] = h;
+    if (info.transparent) return;   // ENTWURF: Wald liegt als CSS darunter, Leinwand zeigt nur Fische und Schatten
     upload(new Float32Array([x0, y0, x0 + w, y0, x0, y0 + h, x0 + w, y0 + h]), new Float32Array([0, 0, bgImg.width, 0, 0, bgImg.height, bgImg.width, bgImg.height]), new Uint32Array([0, 1, 2, 2, 1, 3]));
     setCommon(W, H, 0, 0, 0, 0, 1, 0, [bgImg.width, bgImg.height]);
     gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, bgTex); gl.uniform1i(U("uTex"), 0); gl.uniform1i(U("uMode"), 4);
@@ -125,7 +129,9 @@ void main(){
     const want = desiredCount(); if (swarm.length !== want) makeSwarm(want);
     const Lb = baseLengthPx(Wcss, Hcss);
     let visible = 0;
-    for (const k of swarm) { k.Lpx = Lb * k.char.size * Math.pow(k.char.height, 0.35); k.bounds = { w: Wcss / k.Lpx, h: Hcss / k.Lpx };
+    for (const k of swarm) { const alt = k.Lpx; k.Lpx = Lb * k.char.size * Math.pow(k.char.height, 0.35);
+      if (alt && k.placed && alt !== k.Lpx) { k.x *= alt / k.Lpx; k.y *= alt / k.Lpx; }   // ENTWURF: Bildposition halten statt springen
+      k.bounds = { w: Wcss / k.Lpx, h: Hcss / k.Lpx };
       if (!k.placed) { k.x = k.bounds.w * (0.1 + 0.8 * rng()); k.y = k.bounds.h * (0.1 + 0.8 * rng()); k.heading = rng() * 6.28; k.targetHeading = k.heading; k.placed = true; k.goalUntil = 0;
         if (k.i >= P.targetVisible) { k.away = true; k.awayUntil = 0.5 + 7 * rng(); } }   // Start: nur die Zielzahl im Bild, der Rest tritt gestaffelt ein
       if (!k.away && k.x > 0 && k.x < k.bounds.w && k.y > 0 && k.y < k.bounds.h) visible++; }
@@ -156,7 +162,7 @@ void main(){
     if (canvas.width !== W || canvas.height !== H) { canvas.width = W; canvas.height = H; }
     stepSim(dt, Wcss, Hcss);
     gl.viewport(0, 0, W, H); gl.disable(gl.DEPTH_TEST); gl.enable(gl.BLEND); gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
-    gl.clearColor(0, 0, 0, 1); gl.clear(gl.COLOR_BUFFER_BIT);
+    gl.clearColor(0, 0, 0, info.transparent ? 0 : 1); gl.clear(gl.COLOR_BUFFER_BIT);
     drawBackground(W, H);
     const order = swarm.filter((k) => !k.away).sort((a, b) => a.char.height - b.char.height);
     const rotOf = (k, Pk) => k.heading - e1Angle(k.F) + (S.C ? Pk.headYaw * Math.PI / 180 : 0);
@@ -165,7 +171,6 @@ void main(){
   }
 
   // ---------- Ablauf ----------
-  const info = { frames: 0, fish: 0, seed, running: false, lost: false };
   let lastT = null, raf = 0;
   const motion = opts.reducedMotion || matchMedia("(prefers-reduced-motion: reduce)");
   const shouldRun = () => !document.hidden && !motion.matches && !info.lost;

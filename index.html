@@ -5,10 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>FishdontFly</title>
 <meta name="description" content="Fische fliegen nicht.">
-<meta name="theme-color" content="#2b3324">
+<meta name="theme-color" content="#1e1e1e">
 <link rel="preload" href="animation/hintergrund.webp" as="image" type="image/webp">
 <link rel="modulepreload" href="animation/koi.js">
-<link rel="stylesheet" href="css/start.css">
+<link rel="stylesheet" href="schrift/newsreader.css">
+<link rel="stylesheet" href="gemeinsam.css">
+<link rel="alternate" type="application/atom+xml" title="FishdontFly" href="/feed.xml">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="FishdontFly">
 <meta property="og:url" content="https://www.fishdontfly.site/">
@@ -20,54 +22,93 @@
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <meta property="og:title" content="FishdontFly">
 <meta property="og:description" content="Gemalte Koi schwimmen über den Baumkronen.">
+<style>
+  /* Startebene: kein Schleier. Der Ort bleibt, nur der Fokus wechselt: die Ordner kommen in den Blick. */
+  :root { --tief: 0; --ordner: #a8c7cc; --ordner-reiter: #8fb0b6; }   /* Bordeaux: #7c4f5a / #6a414b */
+  html { scroll-snap-type: y proximity; }
+  .schleier { display: none; }
+  .oben { height: 100vh; height: 100svh; position: relative; scroll-snap-align: start; }
+  .oben h1 { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .abwaerts {
+    position: absolute; left: 50%; bottom: calc(1.4rem + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%);
+    display: grid; justify-items: center; gap: .5rem; text-decoration: none;
+    opacity: calc(.85 - var(--tief) * 3); text-shadow: 0 1px 6px rgba(0,0,0,.6);
+  }
+  .abwaerts .kapitaelchen { color: var(--schrift-farbe); }
+  .abwaerts::after { content: ""; width: 1px; height: 2.2rem; background: linear-gradient(var(--schrift-farbe), transparent); }
+  .unten { min-height: 100vh; min-height: 100svh; scroll-snap-align: start; display: grid; place-items: center; padding: 4rem 1rem calc(4rem + env(safe-area-inset-bottom, 0px)); }
+  .reihe {
+    list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; justify-content: center; gap: clamp(2.5rem, 8vw, 6rem);
+    opacity: calc(.15 + .85 * var(--tief)); transform: translateY(calc(30px * (1 - var(--tief))));
+  }
+  .symbol { display: grid; justify-items: center; gap: .45rem; text-decoration: none; color: #fff; }
+  .symbol .bild { width: clamp(6.5rem, 16vw, 8rem); aspect-ratio: 120 / 96; position: relative; filter: drop-shadow(1px 2px 2px rgba(0, 0, 0, .45)); }
+  
+  .symbol .name { font: 1.05rem/1.2 var(--aussen); padding: 1px 4px; text-shadow: 1px 1px 0 #000, 0 0 6px rgba(0,0,0,.6); }
+  .symbol:hover .name, .symbol:focus-visible .name { text-decoration: underline; text-underline-offset: 2px; }
+  .ordner svg { width: 100%; height: 100%; display: block; }
+  .stapel img {
+    position: absolute; left: 12%; top: 8%; width: 76%; height: auto; aspect-ratio: 4 / 3; object-fit: cover;
+    background: #fff; border-radius: 1px; box-shadow: 0 1px 3px rgba(0,0,0,.25);
+  }
+  .stapel img:nth-child(1) { transform: translate(-9%, 6%) rotate(-9deg); }
+  .stapel img:nth-child(2) { transform: translate(8%, -3%) rotate(6deg); }
+  .stapel img:nth-child(3) { transform: translate(-2%, 10%) rotate(-2.5deg); }
+  .stapel img:nth-child(4) { transform: translate(4%, 14%) rotate(3.5deg); }
+  
+  .stapel img { transition: transform .25s ease; }
+  @media (prefers-reduced-motion: reduce) { .symbol .bild, .stapel img { transition: none; } }
+</style>
 </head>
 <body>
-<div class="buehne" aria-hidden="true">
-  <canvas id="koi"></canvas>
-</div>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><filter id="holz"><feTurbulence type="fractalNoise" baseFrequency=".85" numOctaves="2" seed="4"/><feDisplacementMap in="SourceGraphic" scale="2.4"/></filter></svg><div class="wald" aria-hidden="true"></div>
+<canvas id="koi" aria-hidden="true"></canvas>
+<div class="schleier" aria-hidden="true"></div>
 
-<main>
+<main class="ebene">
   <section class="oben" aria-label="Start">
-    <h1 class="unsichtbar">Fische fliegen nicht</h1>
-    <a class="hinweis" href="#seiten" aria-label="Seiten zeigen">
-      <span></span><span></span><span></span>
-    </a>
+    <h1>Fische fliegen nicht</h1>
+    <a class="abwaerts" href="#seiten"><span class="kapitaelchen">Seiten</span></a>
   </section>
-
   <section class="unten" id="seiten" aria-label="Seiten">
-    <nav>
-      <ul class="ordnerreihe">
-        <!-- Neue Seite: weiteren <li> mit Link und Beschriftung anlegen. -->
-        <li><a class="ordner" href="blog/"><svg viewBox="0 0 120 92" aria-hidden="true"><use href="#ordner"/></svg><span>Blog</span></a></li>
-        <li><a class="ordner" href="18-09-2026/"><svg viewBox="0 0 120 92" aria-hidden="true"><use href="#ordner"/></svg><span>18-09-2026</span></a></li>
-      </ul>
-    </nav>
+    <ul class="reihe">
+      <li>
+        <a class="symbol ordner" href="blog/">
+          <span class="bild"><svg viewBox="0 0 120 96" aria-hidden="true">
+            <defs>
+              <linearGradient id="vorn" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--ordner)" stop-opacity=".97"/><stop offset="1" stop-color="var(--ordner)"/></linearGradient>
+              <linearGradient id="glanz" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".14"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".08"/></linearGradient>
+            </defs>
+            <path d="M4 14 Q4 6 12 6 H40 Q45 6 48 10 L52 15 H108 Q116 15 116 23 V84 Q116 92 108 92 H12 Q4 92 4 84 Z" fill="var(--ordner-reiter)"/>
+            <path d="M4 30 Q4 22 12 22 H108 Q116 22 116 30 V84 Q116 92 108 92 H12 Q4 92 4 84 Z" fill="url(#vorn)"/>
+            <path d="M4 30 Q4 22 12 22 H108 Q116 22 116 30 V84 Q116 92 108 92 H12 Q4 92 4 84 Z" fill="url(#glanz)"/>
+          </svg></span>
+          <span class="name">Schriften</span>
+        </a>
+      </li>
+      <li>
+        <a class="symbol" href="18-09-2026/">
+          <span class="bild stapel" aria-hidden="true">
+            <img src="18-09-2026/klein/11.webp" alt="" width="640" height="480">
+            <img src="18-09-2026/klein/27.webp" alt="" width="640" height="480">
+            <img src="18-09-2026/klein/05.webp" alt="" width="640" height="480">
+            <img src="18-09-2026/klein/03.webp" alt="" width="640" height="480">
+          </span>
+          <span class="name">18-09-2026</span>
+        </a>
+      </li>
+    </ul>
   </section>
 </main>
 
-<svg width="0" height="0" style="position:absolute" aria-hidden="true">
-  <symbol id="ordner" viewBox="0 0 120 92">
-    <path d="M9 13q0-6 6-6h25q4 0 6.5 3.2L52 17h55q6 0 6 6v62H9z" fill="var(--ordner-hinten)" stroke="var(--kontur)" stroke-width="4.5" stroke-linejoin="round"/>
-    <path d="M25 31q1.2-5.5 6.5-5.5H111q6 0 4.8 6L105 80q-1.2 5.5-6.5 5.5H13q-5.5 0-4.3-5.5z" fill="var(--ordner)" stroke="var(--kontur)" stroke-width="4.5" stroke-linejoin="round"/>
-  </symbol>
-</svg>
-
 <script type="module">
-import { startKoi } from "./animation/koi.js";
-const buehne = document.querySelector(".buehne"), canvas = document.getElementById("koi");
-const q = new URLSearchParams(location.search);
-startKoi(canvas, { seed: q.has("seed") ? +q.get("seed") : undefined, onLost: () => buehne.classList.remove("laeuft") })
-  .then((info) => { window.__koi = info; buehne.classList.add("laeuft");
-    if (q.has("fps")) {   // Prüfhilfe: Bildrate und Fischzahl einblenden
-      const el = Object.assign(document.createElement("div"), { style: "position:fixed;right:8px;top:8px;z-index:9;font:12px monospace;background:#000a;color:#fff;padding:4px 8px;border-radius:4px" });
-      document.body.append(el); let f = info.frames, t = performance.now();
-      setInterval(() => { const n = performance.now(); el.textContent = `${((info.frames - f) * 1000 / (n - t)).toFixed(0)} fps  ${info.fish} Fische  ${innerWidth}×${innerHeight} @${devicePixelRatio}`; f = info.frames; t = n; }, 1000);
-    } })
-  .catch((e) => { window.__koiFehler = String(e); canvas.remove(); });   // Rückfall: stehendes Hintergrundbild
-
-const hinweis = document.querySelector(".hinweis");
-const setzeHinweis = () => hinweis.classList.toggle("weg", scrollY > 24);
-addEventListener("scroll", setzeHinweis, { passive: true }); setzeHinweis();
+import "./raum.js";
+// Hochwischen = tiefer in den Raum: Schleier, Unschärfe und Kacheln folgen der Scrolltiefe.
+const wurzel = document.documentElement;
+let raf = 0;
+const setze = () => { raf = 0; wurzel.style.setProperty("--tief", Math.min(1, Math.max(0, scrollY / (innerHeight * 0.85))).toFixed(3)); };
+addEventListener("scroll", () => { if (!raf) raf = requestAnimationFrame(setze); }, { passive: true });
+addEventListener("resize", setze); setze();
 </script>
 </body>
 </html>
