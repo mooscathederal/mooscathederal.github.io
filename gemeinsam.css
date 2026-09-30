@@ -455,3 +455,11 @@ body { -webkit-font-smoothing: antialiased; }
 .w-titel { font-size: 1.08rem; }
 .w-lab { color: var(--leise); font-size: .88rem; }
 .blaettern a:hover .w-titel { color: var(--koi); }
+
+/* 30.09.: Seitenwechsel als Absinken statt harter Neuladung (Browser ohne Unterstützung ignorieren das). */
+@view-transition { navigation: auto; }
+::view-transition-old(root) { animation: .45s ease both vt-aus; }
+::view-transition-new(root) { animation: .6s ease both vt-ein; }
+@keyframes vt-aus { to { opacity: 0; filter: blur(4px); } }
+@keyframes vt-ein { from { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { ::view-transition-old(root), ::view-transition-new(root) { animation: none; } }
