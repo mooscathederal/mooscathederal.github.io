@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wald – Shader-Test v2</title>
+<style>
+  html,body{margin:0;height:100%;background:#0b1208;overflow:hidden;font:13px/1.35 Georgia,serif;color:#e9e4d4}
+  canvas{position:fixed;inset:0;width:100vw;height:100vh;display:block}
+  #panel{position:fixed;top:12px;right:12px;width:290px;max-height:calc(100vh - 24px);overflow:auto;
+    background:rgba(14,20,11,.84);border:1px solid rgba(233,228,212,.18);border-radius:6px;padding:10px 12px}
+  #panel.hidden{display:none}
+  h2{font-size:13px;margin:10px 0 4px;font-weight:normal;letter-spacing:.04em;color:#cfc79f;text-transform:uppercase}
+  h2:first-child{margin-top:0}
+  label{display:grid;grid-template-columns:1fr 46px;gap:2px 8px;margin:5px 0}
+  label span.v{text-align:right;font-variant-numeric:tabular-nums;color:#cfc79f}
+  label input{grid-column:1 / 3;width:100%;accent-color:#b9a867}
+  .hint{color:#a9a48e;font-size:11.5px;margin:2px 0 6px}
+  .row{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0}
+  button{background:#26301d;color:#e9e4d4;border:1px solid rgba(233,228,212,.25);border-radius:4px;padding:4px 8px;font:inherit;cursor:pointer}
+  button.on{background:#5a5230;border-color:#cfc79f}
+  #fps{position:fixed;left:12px;bottom:10px;font:12px ui-monospace,monospace;color:#cfc79f;background:rgba(14,20,11,.6);padding:3px 6px;border-radius:3px}
+  #toggle{position:fixed;right:12px;bottom:10px}
+  textarea{width:100%;height:90px;background:#10160c;color:#e9e4d4;border:1px solid rgba(233,228,212,.2);font:11px ui-monospace,monospace}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="panel">
+  <h2>Ansicht</h2>
+  <div class="row" id="views">
+    <button data-v="0" class="on">Animiert</button>
+    <button data-v="1">Standbild</button>
+    <button data-v="2">Bewegungsfeld</button>
+    <button data-v="3">Böen &amp; Wolken</button>
+  </div>
+  <div class="hint">Taste R blendet die Regler aus. „Standbild“ nutzt dieselbe Farbgebung, nur ohne Bewegung.</div>
+  <div id="sliders"></div>
+  <h2>Werte</h2>
+  <div class="row"><button id="copy">Werte kopieren</button><button id="reset">Zurücksetzen</button></div>
+  <textarea id="out" readonly></textarea>
+</div>
+<div id="fps"></div>
+<button id="toggle">Regler</button>
+
+<script>
+const IMG = {farbe:"farbe.webp", d1:"d1.png", d2:"d2.png"};
+const W0 = 2560, H0 = 1440;
+const MAP = {a:0.5337,b:0.02491,c:-0.07249,d:0.42537,e:0.40049,f:0.51707};
+const HB = [0.50, 0.90];
+
+const DEF = {
+  dir:94, lean:3, sway:1.8, swayFreq:1, cross:0.4, couple:1.4,
+  gustScale:2.2, gustSpeed:0.045, gustContrast:0.8,
+  sheenGras:0.15, sheenKrone:0.08,
+  cloudCov:0.4, cloudScale:1.3, cloudSpeed:0.01, cloudDark:0.78, cloudSoft:0.22, cloudPar:0.012,
+  exposure:1, sat:1.15, contrast:1.15, warm:0.1, lift:0,
+  fps:60
+};
+const SPEC = [
+  ["Wind in den Kronen", [
+    ["dir","Windrichtung (Grad im Bild)",0,360,1],
+    ["lean","Anlehnen in Böen (px)",0,10,0.1],
+    ["sway","Schwanken (px)",0,6,0.1],
+    ["swayFreq","Schwanktempo",0.1,3,0.01],
+    ["cross","Querschwingen",0,1,0.01],
+    ["couple","Kopplung der Nachbarn",0,3,0.05],
+  ]],
+  ["Böen", [
+    ["gustScale","Böengröße (klein = große Flecken)",0.3,8,0.05],
+    ["gustSpeed","Böentempo",0,0.2,0.001],
+    ["gustContrast","Böen: gleichmäßig ↔ fleckig",0,1,0.01],
+  ]],
+  ["Licht im Wind", [
+    ["sheenGras","Grasbahnen (hell/dunkel)",0,0.4,0.005],
+    ["sheenKrone","Kronen hellen in Böen auf",0,0.2,0.005],
+  ]],
+  ["Wolkenschatten", [
+    ["cloudCov","Bedeckung",0,1,0.01],
+    ["cloudScale","Wolkengröße (klein = groß)",0.2,5,0.01],
+    ["cloudSpeed","Zuggeschwindigkeit",0,0.06,0.0005],
+    ["cloudDark","Helligkeit im Schatten",0.3,1,0.01],
+    ["cloudSoft","Kantenweichheit",0.02,0.5,0.01],
+    ["cloudPar","Versatz Krone/Boden",0,0.04,0.0005],
+  ]],
+  ["Farbe", [
+    ["exposure","Helligkeit",0.5,1.6,0.01],
+    ["sat","Sättigung",0,1.6,0.01],
+    ["contrast","Kontrast",0.6,1.5,0.01],
+    ["warm","kühl ↔ warm",-1,1,0.01],
+    ["lift","Tiefen anheben",0,0.2,0.005],
+  ]],
+  ["Leistung", [
+    ["fps","Bildrate (Obergrenze)",15,60,1],
+  ]],
+];
+let P = Object.assign({}, DEF);
+let VIEW = 0;
+
+const sl = document.getElementById('sliders');
+const inputs = {};
+for (const [grp, items] of SPEC) {
+  const h = document.createElement('h2'); h.textContent = grp; sl.appendChild(h);
+  for (const [k, name, mn, mx, st] of items) {
+    const l = document.createElement('label');
+    l.innerHTML = `<span>${name}</span><span class="v"></span><input type="range" min="${mn}" max="${mx}" step="${st}">`;
+    const inp = l.querySelector('input'), v = l.querySelector('.v');
+    inp.value = P[k];
+    const upd = () => { P[k] = parseFloat(inp.value); v.textContent = (+P[k]).toFixed(st < 0.01 ? 3 : st < 1 ? 2 : 0); writeOut(); };
+    inp.addEventListener('input', upd); inputs[k] = [inp, upd]; upd();
+    sl.appendChild(l);
+  }
+}
+function writeOut(){ document.getElementById('out').value = JSON.stringify(P); }
+document.getElementById('reset').onclick = () => { P = Object.assign({}, DEF); for (const k in inputs){ inputs[k][0].value = P[k]; inputs[k][1](); } };
+document.getElementById('copy').onclick = () => { const t = document.getElementById('out'); t.select(); try{ navigator.clipboard.writeText(t.value);}catch(e){ document.execCommand('copy'); } };
+document.querySelectorAll('#views button').forEach(b => b.onclick = () => {
+  VIEW = +b.dataset.v; document.querySelectorAll('#views button').forEach(x => x.classList.toggle('on', x === b));
+});
+const panel = document.getElementById('panel');
+document.getElementById('toggle').onclick = () => panel.classList.toggle('hidden');
+addEventListener('keydown', e => { if (e.key === 'r' || e.key === 'R') panel.classList.toggle('hidden'); });
+
+const cv = document.getElementById('c');
+const gl = cv.getContext('webgl2', {antialias:false, premultipliedAlpha:false});
+if (!gl) { document.body.innerHTML = '<p style="padding:20px">WebGL2 nicht verfügbar.</p>'; throw 0; }
+
+const VS = `#version 300 es
+in vec2 p; out vec2 vUv; void main(){ vUv = p*.5+.5; gl_Position = vec4(p,0,1); }`;
+const NOISE = `
+float h21(vec2 p){ p = fract(p*vec2(123.34,456.21)); p += dot(p, p+45.32); return fract(p.x*p.y); }
+float vn(vec2 p){ vec2 i=floor(p), f=fract(p); f=f*f*(3.-2.*f);
+  return mix(mix(h21(i),h21(i+vec2(1,0)),f.x), mix(h21(i+vec2(0,1)),h21(i+vec2(1,1)),f.x), f.y); }
+float fbm(vec2 p){ float a=.5, s=0.; for(int k=0;k<5;k++){ s+=a*vn(p); p=p*2.03+vec2(17.1,9.2); a*=.5; } return s/.97; }`;
+
+// 1) Feld: R Böen Kronen, G Böen Gras, B Wolken
+const FS_FIELD = `#version 300 es
+precision highp float; in vec2 vUv; out vec4 o;
+uniform float uT, uAsp, uGustScale, uGustSpeed, uGustC, uCloudScale, uCloudSpeed; uniform vec2 uDir;
+${NOISE}
+void main(){
+  vec2 q = vUv*vec2(uAsp,1.);
+  float g  = fbm(q*uGustScale - uDir*uT*uGustSpeed*uGustScale);
+  float gg = fbm(q*uGustScale*2.3 + 31.7 - uDir*uT*uGustSpeed*uGustScale*2.6);
+  float lo = mix(.2,.45,uGustC), hi = mix(.95,.7,uGustC);
+  float c  = fbm(q*uCloudScale + 71.3 - uDir*uT*uCloudSpeed*uCloudScale*4.);
+  o = vec4(smoothstep(lo,hi,g), smoothstep(lo,hi,gg), c, 1.);
+}`;
+
+// 2) Bewegungsfeld je Busch (Viertelauflösung), kodiert: rg = .5 + px/32
+const FS_MOTION = `#version 300 es
+precision highp float; in vec2 vUv; out vec4 o;
+uniform sampler2D uD1, uF; uniform mat2 uInv; uniform vec2 uOff, uDir;
+uniform float uT, uLean, uSway, uSwayFreq, uCross;
+void main(){
+  vec3 d1 = texture(uD1, vUv).rgb; float rnd = d1.b;
+  vec2 piv = clamp(uInv*(d1.rg - uOff), 0., 1.);
+  float g = texture(uF, piv).r;
+  float ph = rnd*6.2831, w = uT*uSwayFreq*6.2831;
+  float sw = sin(w*(.75+.5*rnd) + ph) * (.35+.9*g);
+  float sx = sin(w*(.55+.4*fract(rnd*7.3)) + ph*1.7) * (.3+.6*g);
+  vec2 perp = vec2(-uDir.y, uDir.x);
+  vec2 m = uDir*(g*uLean + sw*uSway) + perp*sx*uSway*uCross;
+  o = vec4(.5 + m/32., 0., 1.);
+}`;
+
+// 3) Glätten (separabel)
+const FS_BLUR = `#version 300 es
+precision highp float; in vec2 vUv; out vec4 o;
+uniform sampler2D uM; uniform vec2 uStep;
+void main(){
+  float w[5] = float[](.227027,.1945946,.1216216,.054054,.016216);
+  vec4 s = texture(uM, vUv)*w[0];
+  for (int i=1;i<5;i++){ s += texture(uM, vUv+uStep*float(i))*w[i]; s += texture(uM, vUv-uStep*float(i))*w[i]; }
+  o = s;
+}`;
+
+// 4) Bild
+const FS_MAIN = `#version 300 es
+precision highp float; in vec2 vUv; out vec4 o;
+uniform sampler2D uCol, uD2, uF, uM;
+uniform vec2 uScale, uImg, uSun, uHB;
+uniform float uSheenG, uSheenK, uCloudCov, uCloudDark, uCloudSoft, uCloudPar;
+uniform float uExp, uSat, uCon, uWarm, uLift; uniform int uView;
+vec3 cr(vec2 uv){ // Catmull-Rom, 9 Abrufe
+  vec2 sp = uv*uImg, t1 = floor(sp-.5)+.5, f = sp-t1;
+  vec2 w0 = f*(-.5+f*(1.-.5*f)), w1 = 1.+f*f*(-2.5+1.5*f), w2 = f*(.5+f*(2.-1.5*f)), w3 = f*f*(-.5+.5*f);
+  vec2 w12 = w1+w2, t12 = (t1 + w2/w12)/uImg, t0 = (t1-1.)/uImg, t3 = (t1+2.)/uImg;
+  vec3 r = vec3(0);
+  r += texture(uCol, vec2(t0.x ,t0.y )).rgb*w0.x *w0.y;  r += texture(uCol, vec2(t12.x,t0.y )).rgb*w12.x*w0.y;  r += texture(uCol, vec2(t3.x ,t0.y )).rgb*w3.x *w0.y;
+  r += texture(uCol, vec2(t0.x ,t12.y)).rgb*w0.x *w12.y; r += texture(uCol, vec2(t12.x,t12.y)).rgb*w12.x*w12.y; r += texture(uCol, vec2(t3.x ,t12.y)).rgb*w3.x *w12.y;
+  r += texture(uCol, vec2(t0.x ,t3.y )).rgb*w0.x *w3.y;  r += texture(uCol, vec2(t12.x,t3.y )).rgb*w12.x*w3.y;  r += texture(uCol, vec2(t3.x ,t3.y )).rgb*w3.x *w3.y;
+  return max(r, 0.);
+}
+vec2 offs(vec2 uv){
+  vec2 d2 = texture(uD2, uv).rg;
+  float bush = smoothstep(.2,.8,d2.g);
+  float hb = clamp((d2.r-uHB.x)/(uHB.y-uHB.x), 0., 1.); hb = hb*hb*(3.-2.*hb);
+  vec2 m = (texture(uM, uv).rg - .5)*32.;
+  return m * bush * (.25+.75*hb) / uImg;
+}
+vec3 grade(vec3 c){
+  c *= uExp;
+  c = c*(1.-uLift) + uLift;
+  float l = dot(c, vec3(.2126,.7152,.0722));
+  c = mix(vec3(l), c, uSat);
+  c = (c-.5)*uCon + .5;
+  c *= vec3(1.+.07*uWarm, 1.+.01*uWarm, 1.-.10*uWarm);
+  return clamp(c, 0., 1.);
+}
+void main(){
+  vec2 uv = (vUv-.5)*uScale+.5;
+  if (uView==2){ vec2 m=(texture(uM,uv).rg-.5)*32.; o=vec4(.5+m*.1,.5,1.); return; }
+  vec4 f = texture(uF, uv);
+  if (uView==3){ o=vec4(f.r, f.g*.6, smoothstep(1.-uCloudCov-uCloudSoft,1.-uCloudCov+uCloudSoft,f.b)*.8, 1.); return; }
+  vec3 c;
+  vec2 d2 = texture(uD2, uv).rg; float bush = smoothstep(.2,.8,d2.g);
+  if (uView==1){ c = cr(uv); }
+  else {
+    vec2 o1 = offs(uv), o2 = offs(uv-o1), o3 = offs(uv-o2);
+    c = cr(uv-o3);
+    // Licht im Wind: Grasbahnen und aufhellende Kronen
+    float gg = f.g - .45;
+    c *= 1. + uSheenG*gg*2.*(1.-bush);
+    c = mix(c, c*vec3(1.05,1.05,.9), clamp(uSheenG*f.g*2.,0.,1.)*(1.-bush));
+    c *= 1. + uSheenK*f.r*bush;
+    float cl = texture(uF, uv + uSun*uCloudPar*d2.r).b;
+    cl = smoothstep(1.-uCloudCov-uCloudSoft, 1.-uCloudCov+uCloudSoft, cl);
+    c *= mix(vec3(1.), vec3(uCloudDark)*vec3(.94,.98,1.07), cl);
+  }
+  o = vec4(grade(c), 1.);
+}`;
+
+function sh(type, src){ const s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s);
+  if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) { console.error(gl.getShaderInfoLog(s)); throw gl.getShaderInfoLog(s); } return s; }
+function prog(fs){ const p = gl.createProgram(); gl.attachShader(p, sh(gl.VERTEX_SHADER, VS)); gl.attachShader(p, sh(gl.FRAGMENT_SHADER, fs));
+  gl.bindAttribLocation(p, 0, 'p'); gl.linkProgram(p); if (!gl.getProgramParameter(p, gl.LINK_STATUS)) throw gl.getProgramInfoLog(p);
+  const u = {}; const n = gl.getProgramParameter(p, gl.ACTIVE_UNIFORMS);
+  for (let i=0;i<n;i++){ const a = gl.getActiveUniform(p,i); u[a.name.replace('[0]','')] = gl.getUniformLocation(p, a.name); } return {p,u}; }
+const PF = prog(FS_FIELD), PMO = prog(FS_MOTION), PB = prog(FS_BLUR), PM = prog(FS_MAIN);
+const vb = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, vb);
+gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 3,-1, -1,3]), gl.STATIC_DRAW);
+gl.enableVertexAttribArray(0); gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
+
+function tex(img){ const t = gl.createTexture(); gl.bindTexture(gl.TEXTURE_2D, t);
+  gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true); gl.pixelStorei(gl.UNPACK_COLORSPACE_CONVERSION_WEBGL, gl.NONE);
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE); return t; }
+function target(w, h){ const t = gl.createTexture(); gl.bindTexture(gl.TEXTURE_2D, t);
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA8, w, h, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+  const f = gl.createFramebuffer(); gl.bindFramebuffer(gl.FRAMEBUFFER, f);
+  gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, t, 0); gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+  return {t, f, w, h}; }
+const FIELD = target(256,144), MOT = target(640,360), MOT2 = target(640,360);
+
+const det = MAP.a*MAP.d - MAP.b*MAP.c;
+const INV = [ MAP.d/det, -MAP.c/det, -MAP.b/det, MAP.a/det ];
+
+function load(src){ return new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = src; }); }
+let T = {};
+Promise.all([load(IMG.farbe), load(IMG.d1), load(IMG.d2)]).then(([a,b,c]) => {
+  T.col = tex(a); T.d1 = tex(b); T.d2 = tex(c); requestAnimationFrame(frame);
+});
+
+function resize(){
+  const dpr = Math.min(devicePixelRatio || 1, 2);
+  let w = Math.round(innerWidth*dpr), h = Math.round(innerHeight*dpr);
+  const k = Math.min(1, W0/w, H0/h); w = Math.round(w*k); h = Math.round(h*k);
+  if (cv.width !== w || cv.height !== h){ cv.width = w; cv.height = h; }
+}
+function bindT(prog, unit, t, name){ gl.activeTexture(gl.TEXTURE0+unit); gl.bindTexture(gl.TEXTURE_2D, t); gl.uniform1i(prog.u[name], unit); }
+function to(tg){ gl.bindFramebuffer(gl.FRAMEBUFFER, tg ? tg.f : null); gl.viewport(0,0, tg ? tg.w : cv.width, tg ? tg.h : cv.height); }
+
+let last = 0, t0 = performance.now(), fc = 0, ft = performance.now();
+const fpsEl = document.getElementById('fps');
+function frame(now){
+  requestAnimationFrame(frame);
+  if (window.TFIX===undefined && now - last < 1000/P.fps - 2) return; last = now;
+  resize();
+  const t = (window.TFIX!==undefined) ? window.TFIX : (now - t0)/1000;
+  const a = P.dir*Math.PI/180, dir = [Math.cos(a), Math.sin(a)];
+  // Feld
+  to(FIELD); gl.useProgram(PF.p);
+  gl.uniform1f(PF.u.uT, t); gl.uniform1f(PF.u.uAsp, W0/H0); gl.uniform2f(PF.u.uDir, dir[0], dir[1]);
+  gl.uniform1f(PF.u.uGustScale, P.gustScale); gl.uniform1f(PF.u.uGustSpeed, P.gustSpeed); gl.uniform1f(PF.u.uGustC, P.gustContrast);
+  gl.uniform1f(PF.u.uCloudScale, P.cloudScale); gl.uniform1f(PF.u.uCloudSpeed, P.cloudSpeed);
+  gl.drawArrays(gl.TRIANGLES, 0, 3);
+  // Bewegung
+  to(MOT); gl.useProgram(PMO.p);
+  gl.uniformMatrix2fv(PMO.u.uInv, false, INV); gl.uniform2f(PMO.u.uOff, MAP.e, MAP.f); gl.uniform2f(PMO.u.uDir, dir[0], dir[1]);
+  gl.uniform1f(PMO.u.uT, t); gl.uniform1f(PMO.u.uLean, P.lean); gl.uniform1f(PMO.u.uSway, P.sway);
+  gl.uniform1f(PMO.u.uSwayFreq, P.swayFreq*0.25); gl.uniform1f(PMO.u.uCross, P.cross);
+  bindT(PMO, 0, T.d1, 'uD1'); bindT(PMO, 1, FIELD.t, 'uF');
+  gl.drawArrays(gl.TRIANGLES, 0, 3);
+  // Glätten
+  gl.useProgram(PB.p);
+  to(MOT2); gl.uniform2f(PB.u.uStep, P.couple/640, 0); bindT(PB, 0, MOT.t, 'uM'); gl.drawArrays(gl.TRIANGLES, 0, 3);
+  to(MOT);  gl.uniform2f(PB.u.uStep, 0, P.couple/360); bindT(PB, 0, MOT2.t, 'uM'); gl.drawArrays(gl.TRIANGLES, 0, 3);
+  // Bild
+  to(null); gl.useProgram(PM.p);
+  const ca = cv.width/cv.height, ia = W0/H0, sc = ca > ia ? [1, ia/ca] : [ca/ia, 1], u = PM.u;
+  gl.uniform2f(u.uScale, sc[0], sc[1]); gl.uniform2f(u.uImg, W0, H0);
+  const sa = (315-90)*Math.PI/180; gl.uniform2f(u.uSun, Math.cos(sa), Math.sin(sa)); gl.uniform2f(u.uHB, HB[0], HB[1]);
+  gl.uniform1f(u.uSheenG, P.sheenGras); gl.uniform1f(u.uSheenK, P.sheenKrone);
+  gl.uniform1f(u.uCloudCov, P.cloudCov); gl.uniform1f(u.uCloudDark, P.cloudDark); gl.uniform1f(u.uCloudSoft, P.cloudSoft); gl.uniform1f(u.uCloudPar, P.cloudPar);
+  gl.uniform1f(u.uExp, P.exposure); gl.uniform1f(u.uSat, P.sat); gl.uniform1f(u.uCon, P.contrast); gl.uniform1f(u.uWarm, P.warm); gl.uniform1f(u.uLift, P.lift);
+  gl.uniform1i(u.uView, VIEW);
+  bindT(PM, 0, T.col, 'uCol'); bindT(PM, 1, T.d2, 'uD2'); bindT(PM, 2, FIELD.t, 'uF'); bindT(PM, 3, MOT.t, 'uM');
+  gl.drawArrays(gl.TRIANGLES, 0, 3);
+  fc++; if (now - ft > 1000){ fpsEl.textContent = `${fc} fps · ${cv.width}×${cv.height}`; fc = 0; ft = now; }
+}
+</script>
+</body>
+</html>
