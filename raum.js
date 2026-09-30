@@ -7,7 +7,7 @@ const leise = document.body.classList.contains("unterseite");
 const wald = document.getElementById("wald-shader");
 const koi = document.getElementById("koi");
 
-addEventListener("keydown", (e) => {
+if (q.has("stufe") || q.has("fps")) addEventListener("keydown", (e) => {   // nur in der Vorschau, nie für Besucher
   if (e.metaKey || e.ctrlKey || e.altKey || /input|textarea/i.test(e.target.tagName)) return;
   const k = e.key.toLowerCase(); if (!["0", "a", "b", "c"].includes(k) || k === stufe) return;
   q.set("stufe", k); location.search = q.toString();
