@@ -42,11 +42,6 @@ img { max-width: 100%; display: block; }
   z-index: 0; pointer-events: none; opacity: 0; transition: opacity 1.2s ease;
 }
 #wald-shader.laeuft { opacity: 1; }
-#koi {
-  position: fixed; left: 0; top: 0; width: 100%; height: 100vh; height: 100lvh;
-  z-index: 1; pointer-events: none; opacity: 0; transition: opacity .9s ease;
-}
-#koi.laeuft { opacity: 1; }
 .schleier {
   position: fixed; inset: 0; z-index: 2; pointer-events: none;
   background: rgba(14, 20, 12, calc(.72 * var(--tief)));

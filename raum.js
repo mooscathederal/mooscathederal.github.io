@@ -1,15 +1,14 @@
 // Der Raum unter jeder Ebene: eine Welt aus Wald und Fischen (animation/welt.js), Stand 30.09.2026.
-// Vorschau: ?stufe=0 (bisher: zwei Leinwände), a, b, c (Standard). Tasten 0 / a / b / c schalten um.
+// Vorschau: ?stufe=a, b, c (Standard). Tasten a / b / c schalten um.
 // Weitere Prüfhilfen: ?sinken=5 (erster Abstieg nach 5 s), ?stunde=7 (Tageslicht wie um 7 Uhr), ?fps (Anzeige).
 const q = new URLSearchParams(location.search);
 const stufe = (q.get("stufe") || "c").toLowerCase();
 const leise = document.body.classList.contains("unterseite");
 const wald = document.getElementById("wald-shader");
-const koi = document.getElementById("koi");
 
 if (q.has("stufe") || q.has("fps")) addEventListener("keydown", (e) => {   // nur in der Vorschau, nie für Besucher
   if (e.metaKey || e.ctrlKey || e.altKey || /input|textarea/i.test(e.target.tagName)) return;
-  const k = e.key.toLowerCase(); if (!["0", "a", "b", "c"].includes(k) || k === stufe) return;
+  const k = e.key.toLowerCase(); if (!["a", "b", "c"].includes(k) || k === stufe) return;
   q.set("stufe", k); location.search = q.toString();
 });
 
@@ -22,20 +21,12 @@ if (q.has("fps")) {
     requestAnimationFrame(f); })(t);
 }
 
-if (stufe === "0") {
-  const { startKoi } = await import("./animation/koi.js");
-  const { startWald } = await import("./animation/wald.js");
-  if (wald) startWald(wald).then(() => wald.classList.add("laeuft")).catch(() => wald.remove());
-  if (koi) startKoi(koi, { transparent: true, tint: [0.86, 0.9, 0.82] }).then(() => koi.classList.add("laeuft")).catch(() => koi.remove());
-} else {
-  koi?.remove();
-  let c = wald;
-  if (!c) {   // Unterseiten haben bisher nur den stehenden Wald: Leinwand dazulegen
-    c = Object.assign(document.createElement("canvas"), { id: "wald-shader" }); c.setAttribute("aria-hidden", "true");
-    document.querySelector(".wald")?.after(c);
-  }
-  const { startWelt } = await import("./animation/welt.js");
-  startWelt(c, { stufe, leise, onLost: () => c.remove() })
-    .then(() => c.classList.add("laeuft"))
-    .catch((e) => { console.error(e); c.remove(); });   // Rückfall: stehendes Waldbild
+let c = wald;
+if (!c) {   // Unterseiten haben bisher nur den stehenden Wald: Leinwand dazulegen
+  c = Object.assign(document.createElement("canvas"), { id: "wald-shader" }); c.setAttribute("aria-hidden", "true");
+  document.querySelector(".wald")?.after(c);
 }
+const { startWelt } = await import("./animation/welt.js");
+startWelt(c, { stufe, leise, onLost: () => c.remove() })
+  .then(() => c.classList.add("laeuft"))
+  .catch((e) => { console.error(e); c.remove(); });   // Rückfall: stehendes Waldbild
