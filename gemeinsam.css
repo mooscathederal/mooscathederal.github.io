@@ -463,3 +463,8 @@ body { -webkit-font-smoothing: antialiased; }
 @keyframes vt-aus { to { opacity: 0; filter: blur(4px); } }
 @keyframes vt-ein { from { opacity: 0; } }
 @media (prefers-reduced-motion: reduce) { ::view-transition-old(root), ::view-transition-new(root) { animation: none; } }
+
+/* 06.10.: Satzordnung für Texte mit "form: zeilen" – Zeilenfall (<br> im Absatz) und Zäsur (größerer Leerraum, ohne Ornament). */
+.koerper .zaesur { height: 2.4em; }
+.koerper .zf { display: block; }
+.koerper .zf + .zf { margin-top: .45em; }
