@@ -470,8 +470,8 @@ body { -webkit-font-smoothing: antialiased; }
 .text header h1 + .datum { display: block; }
 .teile { position: relative; }
 .teile > input { position: absolute; top: 0; left: 0; width: 1px; height: 1px; margin: 0; opacity: 0; }
-.teilwahl { display: grid; justify-items: start; gap: .45rem; margin: 0 0 2.8em; }
-.teilwahl label { cursor: pointer; min-width: 6.5rem; padding: .28rem .85rem; border: 1px solid var(--linie); color: var(--leise); font-size: .95rem; line-height: 1.35; }
+.teilwahl { display: grid; width: max-content; justify-items: stretch; gap: .45rem; margin: 0 0 2.8em; }
+.teilwahl label { cursor: pointer; padding: .28rem .85rem; border: 1px solid var(--linie); color: var(--leise); font-size: .95rem; line-height: 1.35; }
 .teilwahl label:hover { color: var(--schrift-farbe); border-color: #4a4a4a; }
 .teil { display: none; }
 .text .koerper .teil-titel { font-size: 1.3rem; font-weight: 500; margin: 0 0 1.3em; }
