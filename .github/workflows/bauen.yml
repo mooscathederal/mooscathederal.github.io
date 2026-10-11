@@ -35,6 +35,8 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0   # ganzer Verlauf, für den Identitätsschutz
 
       - name: Namensschutz
         env:
@@ -54,6 +56,23 @@ jobs:
             exit 1
           fi
           echo "Namensschutz: sauber."
+
+      - name: Identitätsschutz (alle Commits)
+        env:
+          BEGRIFFE: ${{ secrets.NAMENSSCHUTZ_BEGRIFFE }}
+        run: |
+          # Seit 11.10.2026: kein Commit im Verlauf darf Klarname oder private Adresse tragen.
+          MUSTER=$(printf '%s\n' "$BEGRIFFE" | tr -d '\r' | sed '/^[[:space:]]*$/d' | paste -sd'|' -)
+          FEHLER=$(git log --format='%h|%an|%ae|%cn|%ce' | awk -F'|' -v m="$MUSTER" '
+            { ok="(@users\\.noreply\\.github\\.com|^noreply@github\\.com)$"
+              if ($3 !~ ok || $5 !~ ok || tolower($2" "$4) ~ tolower(m)) print $1 }')
+          TEXT=$(git log --format='%h %B' | grep -i -E -e "$MUSTER" | cut -c1-8 || true)
+          if [ -n "$FEHLER$TEXT" ]; then
+            echo "::error::Identitätsschutz: Commit mit Klarname oder privater Adresse im Verlauf. Es wird nichts veröffentlicht."
+            echo "$FEHLER $TEXT"
+            exit 1
+          fi
+          echo "Identitätsschutz: sauber."
 
       - name: Seite zusammenstellen
         run: |

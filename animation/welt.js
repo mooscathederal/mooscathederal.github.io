@@ -1,4 +1,4 @@
-// Welt – Wald und Fische in einer Leinwand, mit einer Uhr und einem Licht (Entwurf 30.09.2026, Werkstatt).
+// Welt – Wald und Fische in einer Leinwand, mit einer Uhr und einem Licht.
 // Ersetzt das Nebeneinander von wald.js (Wald-Shader) und koi.js (Fisch-Leinwand).
 //
 // Stufen (umschaltbar über ?stufe=… in der Vorschau):

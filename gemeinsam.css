@@ -1,4 +1,4 @@
-/* Fischefliegennicht. – ein Stylesheet für alle Ebenen (Entwurf 2).
+/* Fischefliegennicht. – ein Stylesheet für alle Ebenen.
    Ein Raum: der Wald liegt immer dahinter, die Fische ziehen darunter weiter.
    Tiefere Ebenen legen einen Schleier darüber (unscharf, dunkler) statt auf helles Papier zu wechseln. */
 :root {
@@ -222,7 +222,7 @@ img { max-width: 100%; display: block; }
 }
 
 /* =========================================================================
-   Holzschnitt (Entwurf 3): klassisch, unaufgeregt. Außen IM Fell, innen die Leseschrift.
+   Holzschnitt: klassisch, unaufgeregt. Außen IM Fell, innen die Leseschrift.
    Zweifarbdruck: Papier auf Druckschwarz, Rot nur als zweite Farbe.
    ========================================================================= */
 :root {
@@ -301,7 +301,7 @@ h1, h2, h3, .seitentitel, .ls-titel, .text h1, .karte h3, .weiter .titel, .iv-ti
 .liste li { padding: 0; }
 
 /* =========================================================================
-   Entwurf 4: Georgia außen (wie der ursprüngliche Blog), Leseschrift für den Text,
+   Georgia außen (wie der ursprüngliche Blog), Leseschrift für den Text,
    Calibri für Datum, Kopfzeile und Fußzeile. Kein Zierrat.
    ========================================================================= */
 :root {
@@ -348,7 +348,7 @@ h1, h2, h3, .seitentitel, .ls-titel, .text h1, .karte h3, .weiter .titel, .iv-ti
 .fuss-stand { margin-top: .4rem !important; color: var(--leise); font-size: .88rem; }
 
 /* =========================================================================
-   Entwurf 5: wie Obsidian (Standard-Dunkelthema). Leseschrift in den Texten bleibt.
+   Dunkles Thema. Leseschrift in den Texten bleibt.
    ========================================================================= */
 :root {
   --obs: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -373,12 +373,12 @@ body { -webkit-font-smoothing: antialiased; }
 .k-datum { font-size: .8rem; color: #8a8a8a; }
 .text .koerper a { color: var(--koi); text-decoration: none; }
 
-/* Kacheln im gedämpften Notizweiß aus Obsidian (hell), ohne modernen Zierrat */
+/* Kacheln im gedämpften Notizweiß, ohne modernen Zierrat */
 .kachel, .kachel:hover { background: #ececec; border: 0; border-radius: 0; }
 .k-titel, .kachel:hover .k-titel { font-weight: 400; color: #2b2b2b; font-size: .95rem; }
 .kachel:hover .k-titel { text-decoration: underline; text-underline-offset: 2px; }
 
-/* Kacheln wieder wie zuvor (Obsidian dunkel), aber durchlässiger */
+/* Kacheln wieder wie zuvor (dunkel), aber durchlässiger */
 .kachel { background: rgba(38, 38, 38, .55); border: 1px solid #3a3a3a; border-radius: 4px; }
 .kachel:hover { background: rgba(48, 48, 48, .65); border-color: #4a4a4a; }
 .k-titel { font-weight: 600; color: #dadada; }
@@ -392,7 +392,7 @@ body { -webkit-font-smoothing: antialiased; }
 .kachel-seite .ls-titel { text-align: center; }
 
 /* =========================================================================
-   Entwurf 6: eine Schrift für alles (die Leseschrift). Zettel statt Raster.
+   Eine Schrift für alles (die Leseschrift). Zettel statt Raster.
    ========================================================================= */
 :root { --obs: var(--schrift); --aussen: var(--schrift); --aussen-sc: var(--schrift); --buero: var(--schrift); }
 .seitentitel, .ls-titel, .text h1 { font-weight: 500; letter-spacing: 0; }
