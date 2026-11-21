@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Bilder · Fischefliegennicht.</title>
+<meta name="description" content="Bilder">
+<meta name="theme-color" content="#1e1e1e">
+<link rel="icon" href="/favicon.png" type="image/png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="alternate" type="application/atom+xml" title="Fischefliegennicht." href="/feed.xml">
+<link rel="stylesheet" href="../schrift/newsreader.css">
+<link rel="stylesheet" href="../gemeinsam.css">
+<style>
+  .bild-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: .85rem;
+    padding-bottom: 1.5rem;
+  }
+  .regenbogen-titel {
+    margin: .35rem 0 -.65rem;
+    width: min(520px, 94vw);
+    line-height: 1;
+  }
+  .regenbogen-titel svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+  .regenbogen-titel text {
+    font-family: var(--schrift);
+    font-size: 22.5px;
+    font-weight: 500;
+    letter-spacing: .01em;
+    filter: drop-shadow(0 2px 6px rgba(0, 0, 0, .55));
+  }
+  .stapel-buehne {
+    position: relative;
+    width: min(440px, 92vw);
+    height: min(62vh, 520px);
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  .karte {
+    position: absolute;
+    inset: 0;
+    border-radius: 12px;
+    overflow: hidden;
+    background: rgba(18, 20, 18, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    box-shadow: 0 18px 42px rgba(0, 0, 0, 0.45);
+    display: grid;
+    place-items: center;
+    touch-action: none;
+    will-change: transform, opacity;
+  }
+  .karte.oben { cursor: pointer; z-index: 2; }
+  .karte.oben:active { cursor: grabbing; }
+  .karte.unten {
+    z-index: 1;
+    transform: scale(0.95) translateY(10px);
+    opacity: 0.65;
+    pointer-events: none;
+    transition: transform .22s ease, opacity .22s ease;
+  }
+  .karte img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    pointer-events: none;
+    -webkit-user-drag: none;
+    display: block;
+  }
+  .bild-steuerung {
+    display: flex;
+    align-items: center;
+    gap: 1.1rem;
+    font-size: .95rem;
+    color: var(--leise);
+  }
+  .bild-steuerung button {
+    background: rgba(18, 22, 18, 0.48);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    color: var(--schrift-farbe);
+    font: inherit;
+    padding: .38rem .75rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background .15s ease, border-color .15s ease;
+  }
+  .bild-steuerung button:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.3);
+  }
+  .bild-steuerung button:disabled {
+    opacity: .35;
+    cursor: default;
+  }
+  .zaehler { min-width: 5.5rem; text-align: center; font-variant-numeric: tabular-nums; }
+</style>
+</head>
+<body class="unterseite">
+<div class="wald" aria-hidden="true"></div><div class="schleier" aria-hidden="true"></div>
+<div class="ebene">
+<nav class="kopf"><a class="marke" href="../index.html">Fischefliegennicht.</a></nav>
+<main class="seite kachel-seite">
+  <div class="bild-wrap">
+    <h1 class="regenbogen-titel" aria-label="Ein Bild sagt mehr als tausend Worte">
+      <svg viewBox="0 0 520 96" role="img" aria-hidden="true">
+        <defs>
+          <path id="regenbogen-pfad" d="M 24,84 Q 260,4 496,84" />
+          <linearGradient id="regenbogen-verlauf" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#e56b6f"/>
+            <stop offset="20%" stop-color="#f4a261"/>
+            <stop offset="40%" stop-color="#e9c46a"/>
+            <stop offset="60%" stop-color="#7bc96f"/>
+            <stop offset="80%" stop-color="#64b5f6"/>
+            <stop offset="100%" stop-color="#b388eb"/>
+          </linearGradient>
+        </defs>
+        <text text-anchor="middle" fill="url(#regenbogen-verlauf)">
+          <textPath href="#regenbogen-pfad" startOffset="50%">Ein Bild sagt mehr als tausend Worte</textPath>
+        </text>
+      </svg>
+    </h1>
+    <div class="stapel-buehne" id="buehne" aria-live="polite"></div>
+    <div class="bild-steuerung">
+      <button type="button" id="btn-zurueck" title="Vorheriges Bild (Rückschritt)">↶</button>
+      <span class="zaehler" id="zaehler">1 / 177</span>
+      <button type="button" id="btn-mischen" title="Neu mischen">Mischen</button>
+    </div>
+  </div>
+</main>
+<footer class="fuss"><p class="fuss-links"><a href="../index.html">*Blub*</a> | <a href="../worte/index.html">Worte</a> | <a class="ziffern" href="../18-09-2026/index.html">18-09-2026</a> | <a href="../feed.xml">Feed abonnieren</a> | <a href="mailto:post@fishdontfly.site">post@fishdontfly.site</a></p>
+<p class="fuss-stand">Zuletzt geändert: <span class="datum">15.11.2026</span></p></footer>
+</div>
+<script>
+const MEMES = ["IMG_0526.jpg", "IMG_0528.jpg", "IMG_0529.jpg", "IMG_0530.jpg", "IMG_0531.jpg", "IMG_0533.jpg", "IMG_0534.jpg", "IMG_0535.jpg", "IMG_0536.jpg", "IMG_0537.jpg", "IMG_0538.jpg", "IMG_0575.jpg", "IMG_0577.jpg", "IMG_0592.jpg", "IMG_0603.jpg", "IMG_0605.jpg", "IMG_0607.jpg", "IMG_0611.jpg", "IMG_0624.jpg", "IMG_0640.jpg", "IMG_0817.jpg", "IMG_0821.jpg", "IMG_0822.jpg", "IMG_0824.jpg", "IMG_0864.jpg", "IMG_0865.jpg", "IMG_0866.jpg", "IMG_0867.jpg", "IMG_1052.jpg", "IMG_1053.jpg", "IMG_1055.jpg", "IMG_1057.jpg", "IMG_1058.jpg", "IMG_1062.jpg", "IMG_1065.jpg", "IMG_1066.jpg", "IMG_1068.jpg", "IMG_1073.jpg", "IMG_1074.jpg", "IMG_1078.jpg", "IMG_1079.jpg", "IMG_1081.jpg", "IMG_1083.jpg", "IMG_1084.jpg", "IMG_1086.jpg", "IMG_1087.jpg", "IMG_1088.jpg", "IMG_1089.jpg", "IMG_1091.jpg", "IMG_1095.jpg", "IMG_1096.jpg", "IMG_1109.jpg", "IMG_1111.jpg", "IMG_1113.jpg", "IMG_1119.jpg", "IMG_1123.jpg", "IMG_1134.jpg", "IMG_1135.jpg", "IMG_1136.jpg", "IMG_1137.jpg", "IMG_1138.jpg", "IMG_1140.jpg", "IMG_1142.jpg", "IMG_1151.jpg", "IMG_1152.jpg", "IMG_1153.jpg", "IMG_1159.jpg", "IMG_1162.jpg", "IMG_1163.jpg", "IMG_1165.jpg", "IMG_1166.jpg", "IMG_1167.jpg", "IMG_1169.jpg", "IMG_1170.jpg", "IMG_1171.jpg", "IMG_1175.jpg", "IMG_1181.jpg", "IMG_1183.jpg", "IMG_1186.jpg", "IMG_1187.jpg", "IMG_1190.jpg", "IMG_1194.jpg", "IMG_1202.jpg", "IMG_1211.jpg", "IMG_1215.jpg", "IMG_1220.jpg", "IMG_1222.jpg", "IMG_1226.jpg", "IMG_1227.jpg", "IMG_1231.jpg", "IMG_1239.jpg", "IMG_1240.jpg", "IMG_1244.jpg", "IMG_1245.jpg", "IMG_1246.jpg", "IMG_1247.jpg", "IMG_1248.jpg", "IMG_1249.jpg", "IMG_1253.jpg", "IMG_1254.jpg", "IMG_1255.jpg", "IMG_1256.jpg", "IMG_1257.jpg", "IMG_1258.jpg", "IMG_1259.jpg", "IMG_1260.jpg", "IMG_1261.jpg", "IMG_1262.jpg", "IMG_1263.jpg", "IMG_1268.jpg", "IMG_1278.jpg", "IMG_1280.jpg", "IMG_1282.jpg", "IMG_1283.jpg", "IMG_1284.jpg", "IMG_1285.jpg", "IMG_1286.jpg", "IMG_1290.jpg", "IMG_1300.jpg", "IMG_1301.jpg", "IMG_1303.jpg", "IMG_1304.jpg", "IMG_1305.jpg", "IMG_1322.jpg", "IMG_1326.jpg", "IMG_1349.jpg", "IMG_1351.jpg", "IMG_1352.jpg", "IMG_1354.jpg", "IMG_1358.jpg", "IMG_1359.jpg", "IMG_1363.jpg", "IMG_1364.jpg", "IMG_1367.jpg", "IMG_1368.jpg", "IMG_1373.jpg", "IMG_1374.jpg", "IMG_1398.jpg", "IMG_1402.jpg", "IMG_1405.jpg", "IMG_1408.jpg", "IMG_7295.jpg", "IMG_7297.jpg", "IMG_7299.jpg", "IMG_7301.jpg", "IMG_7315.jpg", "IMG_7322.jpg", "IMG_7324.jpg", "IMG_7326.jpg", "IMG_7333.jpg", "IMG_7334.jpg", "IMG_7336.jpg", "IMG_7337.jpg", "IMG_7338.jpg", "IMG_7349.jpg", "IMG_7350.jpg", "IMG_7356.jpg", "IMG_7357.jpg", "IMG_7363.jpg", "IMG_7595.jpg", "IMG_8663.jpg", "IMG_9418.jpg", "IMG_9446.jpg", "IMG_9449.jpg", "IMG_9450.jpg", "IMG_9452.jpg", "IMG_9455.jpg", "IMG_9463.jpg", "IMG_9517.jpg", "IMG_9519.jpg", "IMG_9522.jpg", "chill-brah.jpg", "go-on-katze.jpg", "history-as-a-hobby.jpg", "jesus-grammatikkorrektur.jpg", "kehrschaufel-grenzwert.jpg", "zigaretten-nettogewinn.jpg"];
+let deck = [...MEMES];
+let idx = 0;
+let historyStack = [];
+
+const buehne = document.getElementById("buehne");
+const zaehler = document.getElementById("zaehler");
+const btnZurueck = document.getElementById("btn-zurueck");
+const btnMischen = document.getElementById("btn-mischen");
+
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function preload(start) {
+  for (let k = 1; k <= 3; k++) {
+    const m = deck[(start + k) % deck.length];
+    const im = new Image();
+    im.src = "memes/" + encodeURIComponent(m);
+  }
+}
+
+function makeCard(name, cls) {
+  const el = document.createElement("div");
+  el.className = "karte " + cls;
+  const img = document.createElement("img");
+  img.src = "memes/" + encodeURIComponent(name);
+  img.alt = "Meme";
+  img.draggable = false;
+  el.appendChild(img);
+  return el;
+}
+
+let animating = false;
+
+function render() {
+  buehne.innerHTML = "";
+  const nextIdx = (idx + 1) % deck.length;
+  const nextCard = makeCard(deck[nextIdx], "unten");
+  const topCard = makeCard(deck[idx], "oben");
+  buehne.append(nextCard, topCard);
+  zaehler.textContent = (idx + 1) + " / " + deck.length;
+  btnZurueck.disabled = historyStack.length === 0;
+  preload(idx);
+  attachDrag(topCard, nextCard);
+}
+
+function fling(dir, topCard, nextCard) {
+  if (animating) return;
+  animating = true;
+  const dist = (window.innerWidth * 0.85 + 320) * dir;
+  topCard.style.transition = "transform 0.28s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.28s ease";
+  topCard.style.transform = `translate3d(${dist}px, 28px, 0) rotate(${dir * 22}deg)`;
+  topCard.style.opacity = "0";
+  if (nextCard) {
+    nextCard.style.transform = "scale(1) translateY(0)";
+    nextCard.style.opacity = "1";
+  }
+  setTimeout(() => {
+    historyStack.push(idx);
+    idx = (idx + 1) % deck.length;
+    animating = false;
+    render();
+  }, 240);
+}
+
+function attachDrag(topCard, nextCard) {
+  let startX = 0, startY = 0, dx = 0, dy = 0, dragging = false, startT = 0, activePid = null;
+
+  topCard.addEventListener("pointerdown", e => {
+    if (animating) return;
+    if (e.pointerType === "mouse" && e.button !== 0) return;
+    dragging = true;
+    activePid = e.pointerId;
+    startX = e.clientX;
+    startY = e.clientY;
+    dx = 0; dy = 0;
+    startT = performance.now();
+    topCard.style.transition = "none";
+    try { topCard.setPointerCapture(e.pointerId); } catch {}
+  });
+
+  topCard.addEventListener("pointermove", e => {
+    if (!dragging || e.pointerId !== activePid) return;
+    dx = e.clientX - startX;
+    dy = e.clientY - startY;
+    const rot = dx * 0.045;
+    topCard.style.transform = `translate3d(${dx}px, ${dy * 0.28}px, 0) rotate(${rot}deg)`;
+    const prog = Math.min(1, Math.abs(dx) / 140);
+    if (nextCard) {
+      const sc = 0.95 + 0.05 * prog;
+      const ty = 10 * (1 - prog);
+      nextCard.style.transform = `scale(${sc.toFixed(3)}) translateY(${ty.toFixed(1)}px)`;
+      nextCard.style.opacity = (0.65 + 0.35 * prog).toFixed(2);
+    }
+  });
+
+  topCard.addEventListener("click", e => {
+    if (e.pointerType === "mouse" && Math.abs(dx) < 6 && Math.abs(dy) < 6) {
+      fling(1, topCard, nextCard);
+    }
+  });
+
+  function endDrag(e) {
+    if (!dragging || (e && e.pointerId !== activePid)) return;
+    dragging = false;
+    try { if (activePid !== null) topCard.releasePointerCapture(activePid); } catch {}
+    activePid = null;
+    const dt = Math.max(16, performance.now() - startT);
+    const vx = dx / dt;
+    if (Math.abs(dx) > 75 || Math.abs(vx) > 0.38) {
+      fling(dx >= 0 ? 1 : -1, topCard, nextCard);
+    } else {
+      topCard.style.transition = "transform 0.26s cubic-bezier(0.2, 0.9, 0.3, 1)";
+      topCard.style.transform = "translate3d(0, 0, 0) rotate(0deg)";
+      if (nextCard) {
+        nextCard.style.transform = "scale(0.95) translateY(10px)";
+        nextCard.style.opacity = "0.65";
+      }
+    }
+  }
+
+  topCard.addEventListener("pointerup", endDrag);
+  topCard.addEventListener("pointercancel", endDrag);
+}
+
+btnZurueck.addEventListener("click", () => {
+  if (animating || historyStack.length === 0) return;
+  idx = historyStack.pop();
+  render();
+});
+btnMischen.addEventListener("click", () => {
+  if (animating) return;
+  shuffle(deck);
+  idx = 0;
+  historyStack = [];
+  render();
+});
+
+addEventListener("keydown", e => {
+  if (e.key === "ArrowLeft") fling(-1, buehne.querySelector(".karte.oben"), buehne.querySelector(".karte.unten"));
+  else if (e.key === "ArrowRight") fling(1, buehne.querySelector(".karte.oben"), buehne.querySelector(".karte.unten"));
+  else if (e.key === "Backspace" || e.key.toLowerCase() === "z") btnZurueck.click();
+});
+
+shuffle(deck);
+render();
+</script>
+<script type="module" src="../raum.js"></script>
+</body>
+</html>
