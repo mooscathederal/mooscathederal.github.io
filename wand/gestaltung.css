@@ -1,0 +1,422 @@
+/* Tiefe nur über Licht, Schatten und Material; kein perspective, translateZ oder 3D-Transform auf Wand oder Fundstücken, weil Zoom, Klicktreffer und Kachel mit einer flachen Ebene rechnen. */
+/* Gestaltung der Wand — einzige Gestaltungsquelle für Board und Kachel.
+   Trägerfläche (eingefroren, abgeleitet aus IMG_2591.jpeg): Raumlicht (wand-licht.webp) + Putzkörnung (wand-korn.webp). */
+:root {
+  /* Startansicht & Bewegungsgefühl (von wand.js gelesen) */
+  --wand-startansicht: alles;         /* alles | perspektive */
+  --wand-zoom-min: 0.12;
+  --wand-zoom-max: 3.5;
+  --wand-zoom-tempo-rad: 0.0022;
+  --wand-zoom-tempo-pinch: 0.01;
+  --wand-zoom-schritt: 1.3;
+  --wand-anim-dauer-ms: 260;
+
+  /* Wandfläche (EINGEFROREN — nicht ändern) */
+  --wand-hintergrund: #cccac6;
+  --wand-muster: url("wand-korn.webp"), url("wand-licht.webp");
+  --wand-muster-groesse: 384px 384px, 100% 100%;
+
+  /* Schrift & Grundfarben (warmes Druck-Anthrazit statt digitalem Schwarz: Tinte sitzt im Papier) */
+  --wand-schrift: "Newsreader", "Iowan Old Style", Georgia, serif;
+  --wand-ui-schrift: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+  --wand-text: #2d2b27;
+  --wand-leise: #66635b;
+  --wand-akzent: #7d3f2b;
+
+  /* Fundstücke (Standard: Papier-Tonalität nahe der Wand, asymmetrische Kontaktfuge) */
+  --karte-hintergrund: #ebe9e2;
+  --karte-ausblend-farbe: #e6e3db;
+  --karte-rand: transparent;
+  --karte-radius: 0.5px;
+  --karte-schatten:
+    inset 0 1px 0 rgba(255, 255, 252, .55),
+    0 2px 1.5px -0.5px rgba(18, 17, 15, .44),
+    1px 3.5px 4px -1.5px rgba(18, 17, 15, .24),
+    1px 0 0 rgba(18, 17, 15, .10);
+  --karte-innenabstand: 20px;
+
+  /* Lesekarten (Text länger als die Karte): weiche Text-Ausblendung ins Papier, Kante bleibt intakt */
+  --karte-max-hoehe: 420px;
+  --ueberlauf-ausblendung: 2.6em;
+  --lesekarte-rand: 1.5px solid rgba(125, 63, 43, .62);
+
+  /* Bild-Fundstücke (Einzelfoto: sichtbare Papierkante als Begrenzung) */
+  --bild-rahmen: #ebe9e2;
+  --bild-radius: 0.5px;
+
+  /* Museumskarte (fester, matter Karton — ruhiges Ausstellungsschild) */
+  --museum-hintergrund: #e4e1d8;
+  --museum-rand: transparent;
+  --museum-schrift: "Newsreader", "Iowan Old Style", Georgia, serif;
+  --museum-titel: #292824;
+  --museum-quelle: #626058;
+
+  /* Gruppen & Kanten (Putz bleibt durchscheinend sichtbar) */
+  --gruppe-hintergrund: rgba(24, 23, 20, .026);
+  --gruppe-rand: rgba(30, 29, 25, .17);
+  --gruppe-label: #4a4842;
+  --kante-farbe: rgba(34, 32, 28, .42);
+  --kante-breite: 1.4;
+
+  /* Obsidian-Farbvoreinstellungen (1–6): gedämpfte Pigmenttöne am Rand */
+  --farbe-1: #b85244;
+  --farbe-2: #bd7d3c;
+  --farbe-3: #b89a3e;
+  --farbe-4: #4f7d56;
+  --farbe-5: #467887;
+  --farbe-6: #6f5788;
+
+  /* Bedienleiste (HUD): leicht durchscheinend über dem Putz */
+  --hud-hintergrund: rgba(246, 245, 240, .82);
+  --hud-rand: rgba(24, 23, 20, .18);
+  --hud-text: #292824;
+}
+
+/* Typgetrennte physische Klassen (abgeleitet aus IMG_2597 Papier & IMG_2595 Rahmen).
+   Spezifität .wand-welt .fundstueck greift sauber nach wand.css. */
+
+/* 1. Papierblatt (Text, Notiz, Link): flach, feiner Oberlicht-Verlauf + zarte Papierkörnung,
+   scharfe Unterkanten-Kontaktfuge, ruhiger gedruckter Satzspiegel */
+.wand-welt .fundstueck.typ-text,
+.wand-welt .fundstueck.typ-notiz {
+  max-height: var(--karte-max-hoehe);
+}
+
+.wand-welt .fundstueck.typ-text,
+.wand-welt .fundstueck.typ-notiz,
+.wand-welt .fundstueck.typ-link {
+  border-width: 0;
+  background-color: #ebe9e2;
+  background-image:
+    url("wand-korn.webp"),
+    linear-gradient(180deg, #eeece5 0%, #e6e3db 100%);
+  background-size: 384px 384px, 100% 100%;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 250, .58),
+    0 2px 1.2px -0.5px rgba(16, 15, 13, .48),
+    0.5px 3.5px 3.2px -1.5px rgba(16, 15, 13, .22),
+    1px 0.5px 1px rgba(16, 15, 13, .11);
+  padding: 20px 22px;
+  font-size: 14.5px;
+  line-height: 1.56;
+  letter-spacing: 0.004em;
+  color: var(--wand-text);
+  font-feature-settings: "kern" 1, "liga" 1;
+}
+
+.wand-welt .fundstueck.typ-text h1,
+.wand-welt .fundstueck.typ-text h2,
+.wand-welt .fundstueck.typ-text h3,
+.wand-welt .fundstueck.typ-notiz h1,
+.wand-welt .fundstueck.typ-notiz h2,
+.wand-welt .fundstueck.typ-notiz h3 {
+  font-weight: 500;
+  font-size: 1.08em;
+  letter-spacing: 0.01em;
+  color: #23221e;
+  margin: 0 0 0.65em;
+}
+
+/* 2. Museumskarte (2–3 mm Karton / kuratiertes Ausstellungsschild statt Maschinen-Box) */
+.wand-welt .fundstueck.typ-museumskarte {
+  border-width: 0;
+  background-color: #e4e1d8;
+  background-image:
+    url("wand-korn.webp"),
+    linear-gradient(180deg, #e8e5dd 0%, #dfdcd3 100%);
+  background-size: 384px 384px, 100% 100%;
+  padding: 20px 24px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 252, .64),
+    inset 0 -1px 0 rgba(20, 19, 16, .08),
+    0 2px 2px -0.5px rgba(16, 15, 13, .46),
+    1px 4.5px 5.5px -2px rgba(16, 15, 13, .22),
+    1px 1px 1.5px rgba(16, 15, 13, .13);
+}
+
+.wand-welt .fundstueck.typ-museumskarte .museum-card-titel {
+  font-family: var(--museum-schrift);
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 1.28;
+  letter-spacing: -0.005em;
+  color: var(--museum-titel);
+}
+
+.wand-welt .fundstueck.typ-museumskarte .museum-card-titel a {
+  border-bottom: 1px solid transparent;
+  transition: border-color .18s ease, color .18s ease;
+}
+
+.wand-welt .fundstueck.typ-museumskarte .museum-card-titel a:hover {
+  color: var(--wand-akzent);
+  border-bottom-color: rgba(125, 63, 43, .45);
+}
+
+.wand-welt .fundstueck.typ-museumskarte .museum-card-quelle {
+  margin-top: 12px;
+  font-family: var(--wand-ui-schrift);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--museum-quelle);
+}
+
+.wand-welt .fundstueck.typ-museumskarte.ist-link {
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+  padding-right: 34px;
+}
+
+.wand-welt .fundstueck.typ-museumskarte.ist-link .museum-card-titel {
+  text-decoration: underline;
+  text-decoration-color: rgba(41, 40, 36, .24);
+  text-underline-offset: 4px;
+  text-decoration-thickness: 1px;
+  transition: color .18s ease, text-decoration-color .18s ease;
+}
+
+.wand-welt .fundstueck.typ-museumskarte.ist-link .link-fussnote {
+  position: absolute;
+  right: 13px;
+  bottom: 9px;
+  font-family: var(--wand-ui-schrift);
+  font-size: 11.5px;
+  line-height: 1;
+  color: var(--museum-quelle);
+  opacity: 0.72;
+  transition: color .18s ease, opacity .18s ease, transform .18s ease;
+}
+
+.wand-welt .fundstueck.typ-museumskarte.ist-link:hover .museum-card-titel {
+  color: var(--wand-akzent);
+  text-decoration-color: rgba(125, 63, 43, .62);
+}
+
+.wand-welt .fundstueck.typ-museumskarte.ist-link:hover .link-fussnote {
+  color: var(--wand-akzent);
+  opacity: 1;
+  transform: translate(1px, -1px);
+}
+
+/* 3. Bild / Druck: 2 Varianten auf der Wand (unbeschnitten)
+   3a. Einzelfoto / Print (Standard): sichtbare Papierkante als Begrenzung, enge Kontaktfuge. */
+.wand-welt .fundstueck.typ-bild.stil-abzug {
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 0.5px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 252, .65),
+    0 2px 1.6px -0.5px rgba(16, 15, 13, .50),
+    1px 4px 5px -1.5px rgba(16, 15, 13, .24),
+    1px 0.5px 1px rgba(16, 15, 13, .12);
+}
+
+/* 3b. Galerierahmen + Passepartout (Beta C2, über Hilfsgruppe "Rahmen") */
+.wand-welt .fundstueck.typ-bild.stil-rahmen {
+  padding: 12px;
+  background: #eceae4;
+  border: 7px solid #262624;
+  border-radius: 0.5px;
+  box-shadow:
+    inset 0 1px 4px rgba(0, 0, 0, .28),
+    0 2px 2px rgba(14, 13, 11, .50),
+    2px 6px 10px -2px rgba(14, 13, 11, .28),
+    3px 10px 16px -6px rgba(14, 13, 11, .16);
+}
+
+/* 4. Papierstreifen (Weg B · eingefrorenes v5-Bütten + S3a-Buchdruck, Kontaktfuge + feine Oberkante) */
+.wand-welt .fundstueck.typ-papierstreifen {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  filter:
+    drop-shadow(0 -0.5px 0.35px rgba(255, 255, 252, .68))
+    drop-shadow(0 -0.25px 0.2px rgba(24, 22, 18, .16))
+    drop-shadow(0 1.25px 0.45px rgba(18, 16, 13, .52));
+}
+
+.wand-welt .fundstueck.typ-papierstreifen:not(.bemalt) {
+  background: #e3dedb;
+}
+
+/* 5. Notiz-Datei (.typ-notiz): Manuskript-Kopfzeile, eingebettete Bilder, ruhiger Lesekarten-Fokus */
+.wand-welt .fundstueck.typ-notiz .notiz-kopf {
+  font-family: var(--wand-ui-schrift);
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: 0.085em;
+  text-transform: uppercase;
+  color: var(--wand-leise);
+  padding-bottom: 8px;
+  margin-bottom: 12px;
+  border-bottom: 1px solid rgba(36, 34, 30, .14);
+}
+
+.wand-welt .fundstueck.typ-text img,
+.wand-welt .fundstueck.typ-notiz img {
+  border: 1px solid rgba(28, 26, 22, .12);
+  border-radius: 0.5px;
+  margin: 0.65em 0;
+}
+
+.wand-welt .fundstueck.lesend {
+  outline: var(--lesekarte-rand);
+  outline-offset: 2px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 250, .65),
+    0 3px 3px -0.5px rgba(16, 15, 13, .42),
+    2px 8px 14px -4px rgba(16, 15, 13, .22);
+}
+
+/* 6. Link-Karte (.typ-link): kleines Verweis-Kärtchen mit feinem Akzentstrich */
+.wand-welt .fundstueck.typ-link {
+  background-color: #e7e4dc;
+  background-image:
+    url("wand-korn.webp"),
+    linear-gradient(180deg, #eae7df 0%, #e2dfd7 100%);
+  padding: 16px 20px;
+  border-left: 2.5px solid rgba(125, 63, 43, .48);
+  gap: 5px;
+}
+
+.wand-welt .fundstueck.typ-link .link-domain {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 10.5px;
+  letter-spacing: 0.08em;
+  color: var(--wand-leise);
+}
+
+.wand-welt .fundstueck.typ-link .link-domain::after {
+  content: "↗";
+  font-size: 12px;
+  opacity: 0.65;
+}
+
+.wand-welt .fundstueck.typ-link .link-ziel {
+  font-family: var(--wand-schrift);
+  font-size: 15.5px;
+  line-height: 1.32;
+  color: var(--wand-text);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(45, 43, 39, .22);
+  align-self: flex-start;
+  transition: color .18s ease, border-color .18s ease;
+}
+
+.wand-welt .fundstueck.typ-link .link-ziel:hover {
+  color: var(--wand-akzent);
+  border-bottom-color: rgba(125, 63, 43, .55);
+}
+
+/* 7. Gruppen (.wand-gruppe): ruhige Wandzone auf Putz */
+.wand-welt .wand-gruppe {
+  border: 1px solid var(--gruppe-rand);
+  border-radius: 1px;
+  background: var(--gruppe-hintergrund);
+}
+
+.wand-welt .wand-gruppe-label {
+  left: 2px;
+  top: -24px;
+  font-family: var(--wand-schrift);
+  font-style: italic;
+  font-size: 14px;
+  font-weight: 400;
+  letter-spacing: 0.015em;
+  color: var(--gruppe-label);
+}
+
+.wand-welt .wand-gruppe[data-farbe] {
+  border-width: 1px;
+  border-color: color-mix(in srgb, var(--knoten-farbe) 48%, transparent);
+  background: color-mix(in srgb, var(--knoten-farbe) 4.5%, transparent);
+}
+
+.wand-welt .wand-gruppe[data-farbe] .wand-gruppe-label {
+  color: color-mix(in srgb, var(--knoten-farbe) 72%, #2b2926);
+}
+
+/* 8. Kanten & Beschriftungsschild (.wand-kanten): feine Fadenlinie + Papier-Fähnchen */
+.wand-welt .wand-kanten .kante-label-bg {
+  fill: #eceae3;
+  stroke: rgba(28, 27, 24, .18);
+  stroke-width: 0.75;
+}
+
+.wand-welt .wand-kanten .kante-label-text {
+  fill: var(--wand-text);
+  font-family: var(--wand-schrift);
+  font-size: 12.5px;
+  letter-spacing: 0.01em;
+}
+
+/* 9. Farbmarkierungen (Preset 1–6 / Hex): gedämpfter Pigmentstreifen links statt Vollrahmen */
+.wand-welt .fundstueck[data-farbe] {
+  border-width: 0;
+  border-left: 3px solid var(--knoten-farbe);
+}
+
+.wand-welt .fundstueck.typ-bild.stil-abzug[data-farbe] {
+  border-left: 0;
+  border-bottom: 2.5px solid var(--knoten-farbe);
+}
+
+.wand-welt .fundstueck.typ-bild.stil-rahmen[data-farbe] {
+  border: 7px solid #262624;
+  outline: 2px solid var(--knoten-farbe);
+  outline-offset: -9px;
+}
+
+/* 9. Song / Album (Spotify-Link-Knoten, 28.11.): nur das Cover als Quadrat, hängt wie ein Abzug.
+   Ganzes Quadrat ist der Link; Pfeil unten rechts dunkel ohne Plättchen, mit feinem hellem Saum
+   (trägt auf dunklen Covern). */
+.wand-welt .fundstueck.typ-song {
+  display: block;
+  padding: 0;
+  border: 0;
+  border-radius: 0.5px;
+  background: #1a1917;
+  text-decoration: none;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 252, .35),
+    0 2px 1.6px -0.5px rgba(16, 15, 13, .50),
+    1px 4px 5px -1.5px rgba(16, 15, 13, .24),
+    1px 0.5px 1px rgba(16, 15, 13, .12);
+}
+
+.wand-welt .fundstueck.typ-song img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+  -webkit-user-drag: none;
+}
+
+.wand-welt .fundstueck.typ-song .link-fussnote {
+  position: absolute;
+  right: 12px;
+  bottom: 8px;
+  font-family: var(--wand-ui-schrift);
+  font-size: 26px;
+  font-weight: 600;
+  line-height: 1;
+  color: #1f1c19;
+  text-shadow:
+    0 0 1px rgba(240, 236, 229, .95),
+    0 0 3px rgba(240, 236, 229, .75);
+  transition: transform .18s ease;
+}
+
+.wand-welt .fundstueck.typ-song:hover .link-fussnote {
+  transform: translate(1px, -1px);
+}
+
+.wand-welt .fundstueck.typ-song[data-farbe] {
+  border-bottom: 2.5px solid var(--knoten-farbe);
+}

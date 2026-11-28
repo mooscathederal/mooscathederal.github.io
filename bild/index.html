@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Memes · Fischefliegennicht.</title>
+<meta name="description" content="Memes">
+<meta name="theme-color" content="#1e1e1e">
+<link rel="alternate" type="application/atom+xml" title="Fischefliegennicht." href="/feed.xml">
+<link rel="stylesheet" href="../schrift/newsreader.css">
+<link rel="stylesheet" href="../gemeinsam.css">
+<style>
+  /* 26.11.2026: Die weggeworfene Karte machte die Seite kurz dreimal so breit (gemessen 1141 statt 375 px);
+     iOS-Safari zoomte daraufhin neu und sprang. Abgeschnitten wird am fensterbreiten Rahmen, damit die Karte
+     am Desktop nicht an der Spaltenkante endet; clip schafft keinen Scrollbereich. */
+  .ebene { overflow-x: clip; }
+  html { touch-action: manipulation; }   /* kein Doppeltipp-Zoom auf der Bild-Seite; Zwei-Finger-Zoom bleibt */
+  .bild-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: .85rem;
+    padding-bottom: 1.5rem;
+  }
+  .regenbogen-titel {
+    margin: .35rem 0 -.65rem;
+    width: min(520px, 94vw);
+    line-height: 1;
+  }
+  .regenbogen-titel svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+  .regenbogen-titel text {
+    font-family: var(--schrift);
+    font-size: 22.5px;
+    font-weight: 500;
+    letter-spacing: .01em;
+    filter: drop-shadow(0 2px 6px rgba(0, 0, 0, .55));
+  }
+  .stapel-buehne {
+    position: relative;
+    width: min(440px, 92vw);
+    height: min(62vh, 520px);
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  .bildkarte {
+    position: absolute;
+    inset: 0;
+    border-radius: 12px;
+    overflow: hidden;
+    background: rgba(18, 20, 18, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    box-shadow: 0 18px 42px rgba(0, 0, 0, 0.45);
+    display: grid;
+    grid-template-rows: 100%;
+    grid-template-columns: 100%;
+    place-items: center;
+    touch-action: none;
+    will-change: transform, opacity;
+  }
+  .bildkarte.oben { cursor: pointer; z-index: 2; }
+  .bildkarte.oben:active { cursor: grabbing; }
+  .bildkarte.unten {
+    z-index: 1;
+    transform: scale(0.95) translateY(10px);
+    opacity: 0.65;
+    pointer-events: none;
+    transition: transform .22s ease, opacity .22s ease;
+  }
+  .bildkarte img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    pointer-events: none;
+    -webkit-user-drag: none;
+    display: block;
+  }
+  .bild-steuerung {
+    display: flex;
+    align-items: center;
+    gap: 1.1rem;
+    font-size: .95rem;
+    color: var(--leise);
+  }
+  .bild-steuerung button {
+    background: rgba(18, 22, 18, 0.48);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    color: var(--schrift-farbe);
+    font: inherit;
+    padding: .38rem .75rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background .15s ease, border-color .15s ease;
+  }
+  .bild-steuerung button:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.3);
+  }
+  .bild-steuerung button:disabled {
+    opacity: .35;
+    cursor: default;
+  }
+  .zaehler { min-width: 5.5rem; text-align: center; font-variant-numeric: tabular-nums; }
+</style>
+<script>
+// 26.11.2026: Messanzeige nur mit ?diag (für die Fehlersuche am iPhone, für Besucher unsichtbar).
+if (new URLSearchParams(location.search).has("diag")) addEventListener("DOMContentLoaded", () => {
+  const box = Object.assign(document.createElement("div"), { style: "position:fixed;left:6px;bottom:6px;z-index:99;font:11px/1.35 ui-monospace,monospace;color:#fff;background:rgba(160,0,0,.85);padding:5px 7px;border-radius:4px;white-space:pre;pointer-events:none;max-width:94vw" });
+  document.body.append(box);
+  const d = document.documentElement, v = window.visualViewport || {}, log = [];
+  let letzt = "laden", alt = { y: scrollY, s: v.scale || 1, w: d.scrollWidth };
+  const merk = (s) => { log.push(new Date().toTimeString().slice(3, 8) + " " + s); if (log.length > 7) log.shift(); };
+  const zeig = () => {
+    const n = { y: scrollY, s: v.scale || 1, w: d.scrollWidth };
+    if (Math.abs(n.y - alt.y) > 150) merk(`SPRUNG y ${Math.round(alt.y)}→${Math.round(n.y)} nach ${letzt}`);
+    if (Math.abs(n.s - alt.s) > 0.15) merk(`ZOOM ${alt.s.toFixed(2)}→${n.s.toFixed(2)} nach ${letzt}`);
+    if (n.w !== alt.w) merk(`BREITE ${alt.w}→${n.w} nach ${letzt}`);
+    alt = n;
+    box.textContent = `Breite ${d.scrollWidth} / Höhe ${d.scrollHeight}\nscrollY ${Math.round(scrollY)}  Zoom ${(v.scale || 1).toFixed(2)}  oben ${Math.round(v.pageTop || 0)}\n` + log.join("\n");
+  };
+  for (const e of ["pointerdown", "pointerup", "click", "touchend", "dblclick"]) addEventListener(e, () => { letzt = e; setTimeout(zeig, 0); }, true);
+  addEventListener("scroll", zeig, { passive: true });
+  v.addEventListener && v.addEventListener("scroll", zeig); v.addEventListener && v.addEventListener("resize", zeig);
+  new MutationObserver(() => { letzt = "Kartenwechsel"; zeig(); }).observe(document.getElementById("zaehler"), { childList: true, characterData: true, subtree: true });
+  setInterval(zeig, 250); zeig();
+});
+</script>
+</head>
+<body class="unterseite">
+<div class="wald" aria-hidden="true"></div><div class="schleier" aria-hidden="true"></div>
+<div class="ebene">
+<nav class="kopf"><a class="marke" href="../index.html">Fischefliegennicht.</a></nav>
+<main class="seite kachel-seite">
+  <div class="bild-wrap">
+    <h1 class="regenbogen-titel" aria-label="Ein Bild sagt mehr als tausend Worte">
+      <svg viewBox="0 0 520 96" role="img" aria-hidden="true">
+        <defs>
+          <path id="regenbogen-pfad" d="M 24,84 Q 260,4 496,84" />
+          <linearGradient id="regenbogen-verlauf" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#e56b6f"/>
+            <stop offset="20%" stop-color="#f4a261"/>
+            <stop offset="40%" stop-color="#e9c46a"/>
+            <stop offset="60%" stop-color="#7bc96f"/>
+            <stop offset="80%" stop-color="#64b5f6"/>
+            <stop offset="100%" stop-color="#b388eb"/>
+          </linearGradient>
+        </defs>
+        <text text-anchor="middle" fill="url(#regenbogen-verlauf)">
+          <textPath href="#regenbogen-pfad" startOffset="50%">Ein Bild sagt mehr als tausend Worte</textPath>
+        </text>
+      </svg>
+    </h1>
+    <div class="stapel-buehne" id="buehne" aria-live="polite"></div>
+    <div class="bild-steuerung">
+      <button type="button" id="btn-zurueck" title="Vorheriges Bild (Rückschritt)">↶</button>
+      <span class="zaehler" id="zaehler">1 / 217</span>
+      <button type="button" id="btn-mischen" title="Neu mischen">Mischen</button>
+    </div>
+  </div>
+</main>
+<footer class="fuss"><p class="fuss-links"><a href="../index.html"><em>Blub</em></a> | <a href="../worte/index.html">Worte</a> | <a class="ziffern" href="../18-09-2026/index.html">18-09-2026</a> | <a href="../feed.xml">RSS Feed</a> | <a href="mailto:post@fishdontfly.site">post@fishdontfly.site</a></p>
+<p class="fuss-stand">Zuletzt geändert: <span class="datum">15.11.2026</span></p></footer>
+</div>
+<script>
+const MEMES = ["JPG_0001.jpg", "JPG_0002.jpg", "JPG_0003.jpg", "JPG_0004.jpg", "JPG_0005.jpg", "JPG_0006.jpg", "JPG_0007.jpg", "JPG_0008.jpg", "JPG_0009.jpg", "JPG_0010.jpg", "JPG_0011.jpg", "JPG_0012.jpg", "JPG_0013.jpg", "JPG_0014.jpg", "JPG_0015.jpg", "JPG_0016.jpg", "JPG_0017.jpg", "JPG_0018.jpg", "JPG_0019.jpg", "JPG_0020.jpg", "JPG_0021.jpg", "JPG_0022.jpg", "JPG_0023.jpg", "JPG_0024.jpg", "JPG_0025.jpg", "JPG_0026.jpg", "JPG_0027.jpg", "JPG_0028.jpg", "JPG_0029.jpg", "JPG_0030.jpg", "JPG_0031.jpg", "JPG_0032.jpg", "JPG_0033.jpg", "JPG_0034.jpg", "JPG_0035.jpg", "JPG_0036.jpg", "JPG_0037.jpg", "JPG_0038.jpg", "JPG_0039.jpg", "JPG_0040.jpg", "JPG_0041.jpg", "JPG_0042.jpg", "JPG_0043.jpg", "JPG_0044.jpg", "JPG_0045.jpg", "JPG_0046.jpg", "JPG_0047.jpg", "JPG_0048.jpg", "JPG_0049.jpg", "JPG_0050.jpg", "JPG_0051.jpg", "JPG_0052.jpg", "JPG_0053.jpg", "JPG_0054.jpg", "JPG_0055.jpg", "JPG_0056.jpg", "JPG_0057.jpg", "JPG_0058.jpg", "JPG_0059.jpg", "JPG_0060.jpg", "JPG_0061.jpg", "JPG_0062.jpg", "JPG_0063.jpg", "JPG_0064.jpg", "JPG_0065.jpg", "JPG_0066.jpg", "JPG_0067.jpg", "JPG_0068.jpg", "JPG_0069.jpg", "JPG_0070.jpg", "JPG_0071.jpg", "JPG_0072.jpg", "JPG_0073.jpg", "JPG_0074.jpg", "JPG_0075.jpg", "JPG_0076.jpg", "JPG_0077.jpg", "JPG_0078.jpg", "JPG_0079.jpg", "JPG_0080.jpg", "JPG_0081.jpg", "JPG_0082.jpg", "JPG_0083.jpg", "JPG_0084.jpg", "JPG_0085.jpg", "JPG_0086.jpg", "JPG_0087.jpg", "JPG_0088.jpg", "JPG_0089.jpg", "JPG_0090.jpg", "JPG_0091.jpg", "JPG_0092.jpg", "JPG_0093.jpg", "JPG_0094.jpg", "JPG_0095.jpg", "JPG_0096.jpg", "JPG_0097.jpg", "JPG_0098.jpg", "JPG_0099.jpg", "JPG_0100.jpg", "JPG_0101.jpg", "JPG_0102.jpg", "JPG_0103.jpg", "JPG_0104.jpg", "JPG_0105.jpg", "JPG_0106.jpg", "JPG_0107.jpg", "JPG_0108.jpg", "JPG_0109.jpg", "JPG_0110.jpg", "JPG_0111.jpg", "JPG_0112.jpg", "JPG_0113.jpg", "JPG_0114.jpg", "JPG_0115.jpg", "JPG_0116.jpg", "JPG_0117.jpg", "JPG_0118.jpg", "JPG_0119.jpg", "JPG_0120.jpg", "JPG_0121.jpg", "JPG_0122.jpg", "JPG_0123.jpg", "JPG_0124.jpg", "JPG_0125.jpg", "JPG_0126.jpg", "JPG_0127.jpg", "JPG_0128.jpg", "JPG_0129.jpg", "JPG_0130.jpg", "JPG_0131.jpg", "JPG_0132.jpg", "JPG_0133.jpg", "JPG_0134.jpg", "JPG_0135.jpg", "JPG_0136.jpg", "JPG_0137.jpg", "JPG_0138.jpg", "JPG_0139.jpg", "JPG_0140.jpg", "JPG_0141.jpg", "JPG_0142.jpg", "JPG_0143.jpg", "JPG_0144.jpg", "JPG_0145.jpg", "JPG_0146.jpg", "JPG_0147.jpg", "JPG_0148.jpg", "JPG_0149.jpg", "JPG_0150.jpg", "JPG_0151.jpg", "JPG_0152.jpg", "JPG_0153.jpg", "JPG_0154.jpg", "JPG_0155.jpg", "JPG_0156.jpg", "JPG_0157.jpg", "JPG_0158.jpg", "JPG_0159.jpg", "JPG_0160.jpg", "JPG_0161.jpg", "JPG_0162.jpg", "JPG_0163.jpg", "JPG_0164.jpg", "JPG_0165.jpg", "JPG_0166.jpg", "JPG_0167.jpg", "JPG_0168.jpg", "JPG_0169.jpg", "JPG_0170.jpg", "JPG_0171.jpg", "JPG_0172.jpg", "JPG_0173.jpg", "JPG_0174.jpg", "JPG_0175.jpg", "JPG_0176.jpg", "JPG_0177.jpg", "JPG_0178.jpg", "JPG_0179.jpg", "JPG_0181.jpg", "JPG_0182.jpg", "JPG_0183.jpg", "JPG_0184.jpg", "JPG_0185.jpg", "JPG_0186.jpg", "JPG_0187.jpg", "JPG_0188.jpg", "JPG_0189.jpg", "JPG_0190.jpg", "JPG_0191.jpg", "JPG_0192.jpg", "JPG_0193.jpg", "JPG_0194.jpg", "JPG_0195.jpg", "JPG_0196.jpg", "JPG_0197.jpg", "JPG_0198.jpg", "JPG_0199.jpg", "JPG_0201.jpg", "JPG_0202.jpg", "JPG_0203.jpg", "JPG_0204.jpg", "JPG_0205.jpg", "JPG_0206.jpg", "JPG_0208.jpg", "JPG_0210.jpg", "JPG_0211.jpg", "JPG_0213.jpg", "JPG_0215.jpg", "JPG_0216.jpg", "JPG_0217.jpg", "JPG_0219.jpg", "JPG_0220.jpg", "JPG_0221.jpg", "JPG_0222.jpg", "JPG_0223.jpg", "JPG_0224.jpg"];
+let deck = [...MEMES];
+let idx = 0;
+let historyStack = [];
+
+const buehne = document.getElementById("buehne");
+const zaehler = document.getElementById("zaehler");
+const btnZurueck = document.getElementById("btn-zurueck");
+const btnMischen = document.getElementById("btn-mischen");
+
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function preload(start) {
+  for (let k = 1; k <= 3; k++) {
+    const m = deck[(start + k) % deck.length];
+    const im = new Image();
+    im.src = "memes/" + encodeURIComponent(m);
+  }
+}
+
+// 26.11.2026: Zwei feste Karten, die nur Bild und Rolle tauschen. Vorher baute render() bei jedem Wechsel
+// beide Karten neu, auch die unter dem Finger; auf iOS-Safari sprang die herangezoomte Ansicht dabei ans Seitenende.
+function makeCard(cls) {
+  const el = document.createElement("div");
+  el.className = "bildkarte " + cls;
+  const img = document.createElement("img");
+  img.alt = "Meme";
+  img.draggable = false;
+  el.appendChild(img);
+  return el;
+}
+
+function setzeBild(karte, name) {
+  const src = "memes/" + encodeURIComponent(name);
+  const img = karte.firstChild;
+  if (img.getAttribute("src") !== src) img.setAttribute("src", src);
+}
+
+function ruhe(karte, rolle) {
+  karte.style.transition = "none";
+  karte.style.transform = "";
+  karte.style.opacity = "";
+  karte.className = "bildkarte " + rolle;
+}
+
+const karteA = makeCard("oben"), karteB = makeCard("unten");
+buehne.append(karteA, karteB);
+let oben = karteA, unten = karteB;
+let animating = false;
+
+function render() {
+  ruhe(oben, "oben");
+  ruhe(unten, "unten");
+  setzeBild(oben, deck[idx]);
+  setzeBild(unten, deck[(idx + 1) % deck.length]);
+  void oben.offsetWidth;   // Ruhelage übernehmen, bevor Übergänge wieder greifen
+  oben.style.transition = "";
+  unten.style.transition = "";
+  zaehler.textContent = (idx + 1) + " / " + deck.length;
+  btnZurueck.disabled = historyStack.length === 0;
+  preload(idx);
+}
+
+function fling(dir) {
+  if (animating) return;
+  animating = true;
+  const flieg = oben, naechste = unten;
+  const dist = (window.innerWidth * 0.85 + 320) * dir;
+  flieg.style.transition = "transform 0.28s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.28s ease";
+  flieg.style.transform = `translate3d(${dist}px, 28px, 0) rotate(${dir * 22}deg)`;
+  flieg.style.opacity = "0";
+  naechste.style.transform = "scale(1) translateY(0)";
+  naechste.style.opacity = "1";
+  setTimeout(() => {
+    historyStack.push(idx);
+    idx = (idx + 1) % deck.length;
+    oben = naechste;   // die nachrückende Karte bleibt liegen und wird zur oberen
+    unten = flieg;     // die weggeflogene kehrt unsichtbar als untere zurück
+    animating = false;
+    render();
+  }, 240);
+}
+
+let startX = 0, startY = 0, dx = 0, dy = 0, dragging = false, startT = 0, activePid = null;
+
+function endDrag(e) {
+  if (!dragging || (e && e.pointerId !== activePid)) return;
+  dragging = false;
+  try { if (activePid !== null) oben.releasePointerCapture(activePid); } catch {}
+  activePid = null;
+  const dt = Math.max(16, performance.now() - startT);
+  const vx = dx / dt;
+  if (Math.abs(dx) > 75 || Math.abs(vx) > 0.38) {
+    fling(dx >= 0 ? 1 : -1);
+  } else {
+    oben.style.transition = "transform 0.26s cubic-bezier(0.2, 0.9, 0.3, 1)";
+    oben.style.transform = "translate3d(0, 0, 0) rotate(0deg)";
+    unten.style.transform = "scale(0.95) translateY(10px)";
+    unten.style.opacity = "0.65";
+  }
+}
+
+for (const k of [karteA, karteB]) {
+  k.addEventListener("pointerdown", e => {
+    if (k !== oben || animating) return;
+    if (e.pointerType === "mouse" && e.button !== 0) return;
+    dragging = true;
+    activePid = e.pointerId;
+    startX = e.clientX;
+    startY = e.clientY;
+    dx = 0; dy = 0;
+    startT = performance.now();
+    k.style.transition = "none";
+    try { k.setPointerCapture(e.pointerId); } catch {}
+  });
+  k.addEventListener("pointermove", e => {
+    if (k !== oben || !dragging || e.pointerId !== activePid) return;
+    dx = e.clientX - startX;
+    dy = e.clientY - startY;
+    k.style.transform = `translate3d(${dx}px, ${dy * 0.28}px, 0) rotate(${dx * 0.045}deg)`;
+    const prog = Math.min(1, Math.abs(dx) / 140);
+    unten.style.transform = `scale(${(0.95 + 0.05 * prog).toFixed(3)}) translateY(${(10 * (1 - prog)).toFixed(1)}px)`;
+    unten.style.opacity = (0.65 + 0.35 * prog).toFixed(2);
+  });
+  k.addEventListener("click", e => {
+    if (k === oben && e.pointerType === "mouse" && Math.abs(dx) < 6 && Math.abs(dy) < 6) fling(1);
+  });
+  k.addEventListener("pointerup", endDrag);
+  k.addEventListener("pointercancel", endDrag);
+}
+
+btnZurueck.addEventListener("click", () => {
+  if (animating || historyStack.length === 0) return;
+  idx = historyStack.pop();
+  render();
+});
+btnMischen.addEventListener("click", () => {
+  if (animating) return;
+  shuffle(deck);
+  idx = 0;
+  historyStack = [];
+  render();
+});
+
+addEventListener("keydown", e => {
+  if (e.key === "ArrowLeft") fling(-1);
+  else if (e.key === "ArrowRight") fling(1);
+  else if (e.key === "Backspace" || e.key.toLowerCase() === "z") btnZurueck.click();
+});
+
+shuffle(deck);
+render();
+</script>
+<script type="module" src="../raum.js"></script>
+</body>
+</html>

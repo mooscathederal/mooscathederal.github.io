@@ -1,0 +1,398 @@
+/* Struktur & Layout der Wand — gestalterische Werte kommen aus gestaltung.css */
+* { box-sizing: border-box; }
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--wand-hintergrund);
+  color: var(--wand-text);
+  font-family: var(--wand-schrift);
+}
+
+body.wand-aktiv {
+  overflow: hidden;
+}
+
+.wand-buehne {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  background-color: var(--wand-hintergrund);
+  background-image: var(--wand-muster);
+  background-size: var(--wand-muster-groesse);
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: grab;
+}
+
+.wand-buehne.zieht {
+  cursor: grabbing;
+}
+
+.wand-welt {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform-origin: 0 0;
+}
+
+.wand-kanten {
+  position: absolute;
+  overflow: visible;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.wand-kanten.ebene-labels {
+  z-index: 999;
+}
+
+.wand-kanten path {
+  fill: none;
+  stroke: var(--kante-farbe);
+  stroke-width: var(--kante-breite);
+  stroke-linecap: round;
+}
+
+.wand-kanten .kante-pfeil {
+  fill: var(--kante-farbe);
+}
+
+.wand-kanten .kante-label-bg {
+  fill: var(--karte-hintergrund);
+  stroke: var(--karte-rand);
+  stroke-width: 1;
+}
+
+.wand-kanten .kante-label-text {
+  fill: var(--wand-text);
+  font-family: var(--wand-ui-schrift);
+  font-size: 13px;
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+
+/* Gruppen */
+.wand-gruppe {
+  position: absolute;
+  background: var(--gruppe-hintergrund);
+  border: 1.5px solid var(--gruppe-rand);
+  border-radius: calc(var(--karte-radius) + 3px);
+  pointer-events: none;
+}
+
+.wand-gruppe-label {
+  position: absolute;
+  left: 10px;
+  top: -26px;
+  font-family: var(--wand-ui-schrift);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: .02em;
+  color: var(--gruppe-label);
+  white-space: nowrap;
+}
+
+/* Fundstücke */
+.fundstueck {
+  position: absolute;
+  margin: 0;
+  background: var(--karte-hintergrund);
+  border: 1px solid var(--karte-rand);
+  border-radius: var(--karte-radius);
+  box-shadow: var(--karte-schatten);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.fundstueck a {
+  color: var(--wand-akzent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* Bild-Fundstück */
+.fundstueck.typ-bild {
+  background: var(--bild-rahmen);
+  border-radius: var(--bild-radius);
+  padding: 0;
+}
+
+.fundstueck.typ-bild img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  pointer-events: none;
+  -webkit-user-drag: none;
+}
+
+/* Text- und Notiz-Fundstück (scrollbar bei Überlauf) */
+.fundstueck.typ-text,
+.fundstueck.typ-notiz {
+  padding: var(--karte-innenabstand);
+  font-size: 15px;
+  line-height: 1.48;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+}
+
+.fundstueck.typ-text > :first-child,
+.fundstueck.typ-notiz > :first-child { margin-top: 0; }
+.fundstueck.typ-text > :last-child,
+.fundstueck.typ-notiz > :last-child { margin-bottom: 0; }
+
+.fundstueck.typ-text h1, .fundstueck.typ-text h2, .fundstueck.typ-text h3,
+.fundstueck.typ-notiz h1, .fundstueck.typ-notiz h2, .fundstueck.typ-notiz h3 {
+  font-weight: 500;
+  line-height: 1.2;
+  margin: .2em 0 .45em;
+}
+
+.fundstueck.typ-text img,
+.fundstueck.typ-notiz img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 2px;
+  margin: .45em 0;
+  display: block;
+  pointer-events: none;
+}
+
+.notiz-kopf {
+  font-family: var(--wand-ui-schrift);
+  font-size: 11px;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--wand-leise);
+  margin-bottom: .5em;
+}
+
+/* Link-Fundstück */
+.fundstueck.typ-link {
+  padding: var(--karte-innenabstand);
+  justify-content: center;
+  gap: 6px;
+}
+
+.link-domain {
+  font-family: var(--wand-ui-schrift);
+  font-size: 11px;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--wand-leise);
+}
+
+.link-ziel {
+  font-size: 16px;
+  line-height: 1.3;
+  word-break: break-word;
+}
+
+/* Museumskarte */
+.fundstueck.typ-museumskarte {
+  background: var(--museum-hintergrund);
+  border-color: var(--museum-rand);
+  padding: 20px 24px;
+  justify-content: center;
+  font-family: var(--museum-schrift);
+}
+
+.museum-card-titel {
+  margin: 0;
+  font-size: 19px;
+  font-weight: 400;
+  line-height: 1.24;
+  color: var(--museum-titel);
+}
+
+.museum-card-titel a {
+  color: inherit;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(38, 39, 35, .28);
+}
+
+.museum-card-titel a:hover {
+  border-bottom-color: var(--wand-akzent);
+}
+
+.museum-card-quelle {
+  margin: 10px 0 0;
+  font-size: 14px;
+  line-height: 1.35;
+  color: var(--museum-quelle);
+}
+
+/* Farbmarkierungen aus Obsidian (Preset 1–6 oder Hex) */
+.fundstueck[data-farbe],
+.wand-gruppe[data-farbe] {
+  border-color: var(--knoten-farbe);
+  border-width: 2px;
+}
+
+/* Bedienleiste (HUD) */
+.wand-hud {
+  position: fixed;
+  left: 16px;
+  right: 16px;
+  top: calc(14px + env(safe-area-inset-top, 0px));
+  z-index: 20;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  pointer-events: none;
+}
+
+.wand-hud-gruppe {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  pointer-events: auto;
+}
+
+.wand-knopf {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 36px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--hud-rand);
+  background: var(--hud-hintergrund);
+  color: var(--hud-text);
+  font-family: var(--wand-ui-schrift);
+  font-size: 13.5px;
+  line-height: 1;
+  text-decoration: none;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.wand-knopf.marke {
+  font-family: var(--wand-schrift);
+  font-style: italic;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.wand-knopf.quadrat {
+  width: 36px;
+  padding: 0;
+  font-size: 17px;
+}
+
+.wand-knopf:hover {
+  border-color: var(--wand-akzent);
+}
+
+.wand-knopf:focus-visible {
+  outline: 2px solid var(--wand-akzent);
+  outline-offset: 2px;
+}
+
+/* Kachel-Aufnahmemodus (?kachel=1): keine Bedienleiste, keine Scrollbalken */
+html.kachel-modus .wand-hud {
+  display: none !important;
+}
+
+html.kachel-modus .fundstueck.typ-text,
+html.kachel-modus .fundstueck.typ-notiz {
+  overflow: hidden;
+}
+
+/* Lesekarten: Text, der nicht in seine Karte passt. Ruhend ausgeblendet am unteren Rand,
+   nach einem Klick (Klasse .lesend) mit eigenem Scrollen. Gestalterische Werte aus gestaltung.css. */
+html:not(.ohne-js) .fundstueck.typ-text,
+html:not(.ohne-js) .fundstueck.typ-notiz {
+  overflow-y: hidden;
+}
+.fundstueck.ueberlauf:not(.lesend)::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: var(--ueberlauf-ausblendung);
+  background: linear-gradient(to bottom, transparent, var(--karte-ausblend-farbe, var(--karte-hintergrund)) 88%);
+  pointer-events: none;
+}
+html:not(.kachel-modus) .fundstueck.ueberlauf:not(.lesend) {
+  cursor: pointer;
+}
+html:not(.ohne-js) .fundstueck.lesend {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+  cursor: auto;
+  user-select: text;
+  -webkit-user-select: text;
+  outline: var(--lesekarte-rand);
+  outline-offset: 2px;
+}
+.fundstueck.ueberlauf:focus { outline: none; }
+.fundstueck.lesend:focus,
+.fundstueck.ueberlauf:focus-visible { outline: var(--lesekarte-rand); outline-offset: 2px; }
+
+/* Papierstreifen (Weg B: dynamische Höhe, Canvas-Büttenbild + transparente DOM-Textschicht) */
+.fundstueck.typ-papierstreifen {
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  overflow: visible;
+  display: block;
+}
+
+.fundstueck.typ-papierstreifen .streifen-bild {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  pointer-events: none;
+}
+
+.fundstueck.typ-papierstreifen .streifen-text {
+  position: relative;
+  z-index: 1;
+  padding: 18px 34px;
+  font-family: var(--wand-schrift);
+  font-size: 17.5px;
+  line-height: 1.48;
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+.fundstueck.typ-papierstreifen .streifen-text > :first-child { margin-top: 0; }
+.fundstueck.typ-papierstreifen .streifen-text > :last-child { margin-bottom: 0; }
+
+.fundstueck.typ-papierstreifen.bemalt .streifen-text {
+  color: transparent;
+}
+
+.fundstueck.typ-papierstreifen.bemalt .streifen-text a {
+  color: transparent;
+  text-decoration-color: rgba(125, 63, 43, .45);
+}
+
+.fundstueck.typ-papierstreifen.bemalt .streifen-text ::selection {
+  background: rgba(125, 63, 43, .22);
+  color: #1f1e1b;
+}
+
+/* Rückfall ohne JavaScript: lesbare scrollbare Fläche */
+html.ohne-js body,
+html.ohne-js .wand-buehne {
+  overflow: auto;
+  cursor: default;
+}

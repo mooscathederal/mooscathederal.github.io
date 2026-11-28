@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Klang · Fischefliegennicht.</title>
+<meta name="description" content="Klang · Playlists">
+<meta name="theme-color" content="#1e1e1e">
+<link rel="alternate" type="application/atom+xml" title="Fischefliegennicht." href="/feed.xml">
+<link rel="stylesheet" href="../schrift/newsreader.css">
+<link rel="stylesheet" href="../gemeinsam.css">
+<style>
+  .klang-wrap { max-width: 720px; margin: 0 auto; }
+  .player-box {
+    margin: 1.5rem 0 2rem;
+    background: rgba(18, 22, 18, 0.55);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 14px;
+    padding: .75rem;
+    backdrop-filter: blur(8px);
+  }
+  .player-kopf {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 1rem;
+    margin: 0 0 .6rem;
+    padding: 0 .25rem;
+    font-size: .95rem;
+  }
+  .player-titel { color: var(--schrift-farbe); font-weight: 500; }
+  .player-link { color: var(--leise); font-size: .85rem; text-decoration: none; white-space: nowrap; }
+  .player-link:hover { color: var(--schrift-farbe); text-decoration: underline; }
+  .player-box iframe {
+    display: block;
+    width: 100%;
+    height: 352px;
+    border: 0;
+    border-radius: 10px;
+  }
+  .pl-liste {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+    gap: .75rem;
+  }
+  .pl-item button {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    padding: .55rem .65rem;
+    background: rgba(18, 22, 18, 0.42);
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    border-radius: 10px;
+    color: var(--schrift-farbe);
+    font: inherit;
+    font-size: .95rem;
+    text-align: left;
+    cursor: pointer;
+    transition: background .18s ease, border-color .18s ease, transform .18s ease;
+  }
+  .pl-item button:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.24);
+    transform: translateY(-1px);
+  }
+  .pl-item.aktiv button {
+    background: rgba(255, 255, 255, 0.13);
+    border-color: rgba(255, 255, 255, 0.38);
+  }
+  .pl-item img {
+    width: 44px;
+    height: 44px;
+    border-radius: 6px;
+    object-fit: cover;
+    flex-shrink: 0;
+    background: rgba(255,255,255,0.06);
+  }
+  .pl-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    line-height: 1.25;
+  }
+  .pl-liste-rest {
+    margin-top: 1.75rem;
+  }
+</style>
+</head>
+<body class="unterseite">
+<div class="wald" aria-hidden="true"></div><div class="schleier" aria-hidden="true"></div>
+<div class="ebene">
+<nav class="kopf"><a class="marke" href="../index.html">Fischefliegennicht.</a></nav>
+<main class="seite kachel-seite">
+<div class="klang-wrap">
+  <h1 class="ls-titel">Klang</h1>
+  <section class="player-box" aria-label="Spotify-Player">
+    <div class="player-kopf">
+      <span class="player-titel" id="pl-aktiv-titel"></span>
+      <a class="player-link" id="pl-aktiv-link" href="#" target="_blank" rel="noopener">Auf Spotify öffnen ↗</a>
+    </div>
+    <iframe id="pl-frame" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy" title="Spotify Playlist"></iframe>
+  </section>
+  <ul class="pl-liste" id="pl-liste-1"></ul>
+  <ul class="pl-liste pl-liste-rest" id="pl-liste-2"></ul>
+</div>
+</main>
+<footer class="fuss"><p class="fuss-links"><a href="../index.html"><em>Blub</em></a> | <a href="../worte/index.html">Worte</a> | <a class="ziffern" href="../18-09-2026/index.html">18-09-2026</a> | <a href="../feed.xml">RSS Feed</a> | <a href="mailto:post@fishdontfly.site">post@fishdontfly.site</a></p>
+<p class="fuss-stand">Zuletzt geändert: <span class="datum">15.11.2026</span></p></footer>
+</div>
+<script>
+const BLOCK1 = [{"id": "0YZBqVdMt4FHb8SbZ6Rszl", "title": "Volksmusik", "thumb": "https://image-cdn-fa.spotifycdn.com/image/ab67706c0000da84bf0c00f3829999127aed6a87", "url": "https://open.spotify.com/playlist/0YZBqVdMt4FHb8SbZ6Rszl"}, {"id": "2Ye3aPLx366mcHxNhjRZSM", "title": "Nebel. ", "thumb": "https://image-cdn-fa.spotifycdn.com/image/ab67706c0000da844c559af0c894d9d5a12883b0", "url": "https://open.spotify.com/playlist/2Ye3aPLx366mcHxNhjRZSM"}, {"id": "7C2z7cQTLEGV27lGRWf0HW", "title": "Nur ein Wort", "thumb": "https://image-cdn-fa.spotifycdn.com/image/ab67706c0000da8406781ff2a2d7513d456d6d33", "url": "https://open.spotify.com/playlist/7C2z7cQTLEGV27lGRWf0HW"}, {"id": "4uH7DAnDsxh9zYl9cDLQNC", "title": "Passierschein ", "thumb": "https://image-cdn-fa.spotifycdn.com/image/ab67706c0000da849bbf87205507f22340b7b02d", "url": "https://open.spotify.com/playlist/4uH7DAnDsxh9zYl9cDLQNC"}, {"id": "3XYQdGzIMvilKcZmlGYTbf", "title": "Amelie", "thumb": "https://image-cdn-fa.spotifycdn.com/image/ab67706c0000da84954637946d9ed73d2c7318de", "url": "https://open.spotify.com/playlist/3XYQdGzIMvilKcZmlGYTbf"}, {"id": "4IPyQjobIQITDng8tYrwIN", "title": "2/1", "thumb": "https://image-cdn-ak.spotifycdn.com/image/ab67706c0000da8458bd5916157242c4950b8180", "url": "https://open.spotify.com/playlist/4IPyQjobIQITDng8tYrwIN"}, {"id": "3pcEsPSFDQ7zwACS8mqurM", "title": "Forrest Gump", "thumb": "https://image-cdn-fa.spotifycdn.com/image/ab67706c0000da84342ea2b180bfdc7e578304bc", "url": "https://open.spotify.com/playlist/3pcEsPSFDQ7zwACS8mqurM"}, {"id": "6EOVkFMmaybkIOWBlEDCrk", "title": "4KB bis zum Mond", "thumb": "https://image-cdn-fa.spotifycdn.com/image/ab67706c0000da8438d9a0cd6ce54c2bccd6b425", "url": "https://open.spotify.com/playlist/6EOVkFMmaybkIOWBlEDCrk"}, {"id": "6Y5k9D1OFBCKdvEPXXytgB", "title": "The Wire", "thumb": "https://image-cdn-fa.spotifycdn.com/image/ab67706c0000da84388a4a44a6166491aa47d68f", "url": "https://open.spotify.com/playlist/6Y5k9D1OFBCKdvEPXXytgB"}, {"id": "5CkwGefdggjDNAYXCYrQAm", "title": "The Tru(e)manShow", "thumb": "https://image-cdn-fa.spotifycdn.com/image/ab67706c0000da8471306749ee3994c76fc60308", "url": "https://open.spotify.com/playlist/5CkwGefdggjDNAYXCYrQAm"}, {"id": "2M8oHaicxpoxKfPhF91Fx6", "title": "dumm und wach", "thumb": "https://image-cdn-fa.spotifycdn.com/image/ab67706c0000da8493f6370134a96fb66e3043a8", "url": "https://open.spotify.com/playlist/2M8oHaicxpoxKfPhF91Fx6"}];
+const BLOCK2 = [{"id": "0ah4B882s33X5QzsV1aP3L", "title": "Solitude", "thumb": "https://image-cdn-fa.spotifycdn.com/image/ab67706c0000da84f7e47d557320e06eaeec93d4", "url": "https://open.spotify.com/playlist/0ah4B882s33X5QzsV1aP3L"}, {"id": "2rAaULE8c02aXWhTUg45jD", "title": "Versenkung ", "thumb": "https://image-cdn-ak.spotifycdn.com/image/ab67706c0000da8432c7d50e56e033ea9adab549", "url": "https://open.spotify.com/playlist/2rAaULE8c02aXWhTUg45jD"}, {"id": "1SOxXQBVO579KIaWRJdAM2", "title": "Ad astra", "thumb": "https://image-cdn-fa.spotifycdn.com/image/ab67706c0000da8496ccf285b44191768a0eae46", "url": "https://open.spotify.com/playlist/1SOxXQBVO579KIaWRJdAM2"}, {"id": "3DzCYEjhG1Dmiyr8Try53o", "title": "Konturen im Gemeinsamen", "thumb": "https://image-cdn-ak.spotifycdn.com/image/ab67706c0000da84753ac22fc356df7123701782", "url": "https://open.spotify.com/playlist/3DzCYEjhG1Dmiyr8Try53o"}, {"id": "2hrcvLav90LKIgg9qIuUGn", "title": "Taktfremd", "thumb": "https://image-cdn-fa.spotifycdn.com/image/ab67706c0000da84e9dabe2017eb0f1596da701d", "url": "https://open.spotify.com/playlist/2hrcvLav90LKIgg9qIuUGn"}, {"id": "7Ax121xZjpGCGRb99difl1", "title": "Out of This Cloud", "thumb": "https://image-cdn-fa.spotifycdn.com/image/ab67706c0000da84ffff387527a4e39bbd220901", "url": "https://open.spotify.com/playlist/7Ax121xZjpGCGRb99difl1"}, {"id": "1RJaSlIWmmEFJPAqDXpbeL", "title": "Desire", "thumb": "https://image-cdn-fa.spotifycdn.com/image/ab67706c0000da841ccf1b670915b09df764f2d8", "url": "https://open.spotify.com/playlist/1RJaSlIWmmEFJPAqDXpbeL"}, {"id": "4pBlTg8cuCRe4BjqRDuD5U", "title": "YoungStars", "thumb": "https://image-cdn-ak.spotifycdn.com/image/ab67706c0000da84841e304e61cda35f5f6362f8", "url": "https://open.spotify.com/playlist/4pBlTg8cuCRe4BjqRDuD5U"}, {"id": "2ST7NoqBrcod1xcmNc0jYM", "title": "Twister ", "thumb": "https://image-cdn-fa.spotifycdn.com/image/ab67706c0000da840cbb293d9a7aa7cf2a206fd3", "url": "https://open.spotify.com/playlist/2ST7NoqBrcod1xcmNc0jYM"}, {"id": "74G2cCcincFIq7qkOO9Z45", "title": "Balsam", "thumb": "https://image-cdn-ak.spotifycdn.com/image/ab67706c0000da849c6f85701caeec6befd88d69", "url": "https://open.spotify.com/playlist/74G2cCcincFIq7qkOO9Z45"}, {"id": "0l8P5zrbTUnx4thOWIbKpA", "title": "Balsam für die Seele", "thumb": "https://image-cdn-fa.spotifycdn.com/image/ab67706c0000da84edc0eb26670940c6eb3cf681", "url": "https://open.spotify.com/playlist/0l8P5zrbTUnx4thOWIbKpA"}, {"id": "01jLhqZ7oaqcW6Y9P5nbeE", "title": "Gestern. ", "thumb": "https://image-cdn-ak.spotifycdn.com/image/ab67706c0000da8425602eb759a60bfb2ffd3b9d", "url": "https://open.spotify.com/playlist/01jLhqZ7oaqcW6Y9P5nbeE"}, {"id": "1C9K0yUEluQhciuf8bNLPo", "title": "Heute. ", "thumb": "https://image-cdn-ak.spotifycdn.com/image/ab67706c0000da840f702aaebc665ae5e747f8bb", "url": "https://open.spotify.com/playlist/1C9K0yUEluQhciuf8bNLPo"}, {"id": "3VavJ3LrL3zpQxPevst7AN", "title": "Morgen. ", "thumb": "https://image-cdn-fa.spotifycdn.com/image/ab67706c0000da84f8669c847ea0b9484bfc6fa5", "url": "https://open.spotify.com/playlist/3VavJ3LrL3zpQxPevst7AN"}, {"id": "164MbUJbvZoPCf2PLhqaRQ", "title": "f*ck society ", "thumb": "https://image-cdn-fa.spotifycdn.com/image/ab67706c0000da84b1ab38a11509f9bd8379d866", "url": "https://open.spotify.com/playlist/164MbUJbvZoPCf2PLhqaRQ"}, {"id": "2vhvHsoFQoZiCjecgAm4t5", "title": "Timeless Classics for Soulful Moods", "thumb": "https://image-cdn-fa.spotifycdn.com/image/ab67706c0000da849702fdcd77bf004bdd33b097", "url": "https://open.spotify.com/playlist/2vhvHsoFQoZiCjecgAm4t5"}, {"id": "5cuIUBmwYIbxNPFbUc26qE", "title": "Tiefenzeit", "thumb": "https://image-cdn-ak.spotifycdn.com/image/ab67706c0000da84a1e1ed9281d6510b7cf00e7f", "url": "https://open.spotify.com/playlist/5cuIUBmwYIbxNPFbUc26qE"}, {"id": "13cQoq2l6tHAB27EyiNcUe", "title": "2010ner", "thumb": "https://image-cdn-fa.spotifycdn.com/image/ab67706c0000da8442618665524d6e2383518b67", "url": "https://open.spotify.com/playlist/13cQoq2l6tHAB27EyiNcUe"}];
+const PLAYLISTS = [...BLOCK1, ...BLOCK2];
+const liste1El = document.getElementById("pl-liste-1");
+const liste2El = document.getElementById("pl-liste-2");
+const frameEl = document.getElementById("pl-frame");
+const titelEl = document.getElementById("pl-aktiv-titel");
+const linkEl = document.getElementById("pl-aktiv-link");
+
+function waehle(idx, scrollTop) {
+  const p = PLAYLISTS[idx];
+  if (!p) return;
+  frameEl.src = "https://open.spotify.com/embed/playlist/" + encodeURIComponent(p.id) + "?utm_source=generator&theme=0";
+  titelEl.textContent = p.title;
+  linkEl.href = p.url;
+  document.querySelectorAll(".pl-item").forEach((li, i) => li.classList.toggle("aktiv", i === idx));
+  if (scrollTop) {
+    document.querySelector(".player-box").scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }
+}
+
+function renderBlock(items, targetEl, offset) {
+  items.forEach((p, i) => {
+    const idx = offset + i;
+    const li = document.createElement("li");
+    li.className = "pl-item";
+    const btn = document.createElement("button");
+    btn.type = "button";
+    const img = document.createElement("img");
+    img.loading = "lazy";
+    img.alt = "";
+    img.src = p.thumb || "titel.jpg";
+    const span = document.createElement("span");
+    span.className = "pl-name";
+    span.textContent = p.title;
+    btn.append(img, span);
+    btn.addEventListener("click", () => waehle(idx, true));
+    li.appendChild(btn);
+    targetEl.appendChild(li);
+  });
+}
+
+renderBlock(BLOCK1, liste1El, 0);
+renderBlock(BLOCK2, liste2El, BLOCK1.length);
+
+waehle(0, false);
+</script>
+<script type="module" src="../raum.js"></script>
+</body>
+</html>
